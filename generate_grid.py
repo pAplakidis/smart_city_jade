@@ -110,7 +110,7 @@ def visualize_grid(grid):
 
 if __name__ == "__main__":
     # Define grid dimensions and number of buildings
-    width, height = 20, 20
+    width, height = 22, 22
     num_hospitals = 3
     num_police_stations = 1
     num_fire_departments = 2
