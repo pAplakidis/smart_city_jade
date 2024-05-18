@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import random
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
@@ -79,6 +78,80 @@ def assign_roles(grid, num_hospitals, num_police_stations, num_fire_departments)
     return grid
 
 
+def find_intersections(grid):
+    height, width = grid.shape
+    # grid[0, 0] = -1
+    for y in range(2, height - 2):
+        for x in range(2, width - 2):
+            if grid[y, x] > 0:
+                if grid[y - 1, x - 1] == 0 and grid[y - 1, x] == 0 and grid[y, x - 1] == 0:
+                    grid[y - 1, x - 1] = -1
+                    i = 2
+                    while y - i >= 0 and x - i >= 0 and grid[y - i, x - i] == 0:
+                        if grid[y - i, x - i] == 0:
+                            grid[y - i, x - i] = -1
+                            grid[y - i, x - i + 1] = -1
+                            grid[y - i + 1, x - i] = -1
+                        else:
+                            break
+                        i += 1
+                if grid[y + 1, x + 1] == 0 and grid[y + 1, x] == 0 and grid[y, x + 1] == 0:
+                    grid[y + 1, x + 1] = -1
+                    i = 2
+                    while y + i < height and x + i < width and grid[y + i, x + i] == 0:
+                        if grid[y + i, x + i] == 0:
+                            grid[y + i, x + i] = -1
+                            grid[y + i, x + i - 1] = -1
+                            grid[y + i - 1, x + i] = -1
+                        else:
+                            break
+                        i += 1
+                if grid[y - 1, x + 1] == 0 and grid[y - 1, x] == 0 and grid[y, x + 1] == 0:
+                    grid[y - 1, x + 1] = -1
+                    i = 2
+                    while y - i >= 0 and x + i < width and grid[y - i, x + i] == 0:
+                        if grid[y - i, x + i] == 0:
+                            grid[y - i, x + i] = -1
+                            grid[y - i, x + i - 1] = -1
+                            grid[y - i + 1, x + i] = -1
+                        else:
+                            break
+                        i += 1
+                if grid[y + 1, x - 1] == 0 and grid[y + 1, x] == 0 and grid[y, x - 1] == 0:
+                    grid[y + 1, x - 1] = -1
+                    i = 2
+                    while y + i < height and x - i >= 0 and grid[y + i, x - i] == 0:
+                        if grid[y + i, x - i] == 0:
+                            grid[y + i, x - i] = -1
+                            grid[y + i, x - i + 1] = -1
+                            grid[y + i - 1, x - i] = -1
+                        else:
+                            break
+                        i += 1
+    return grid
+
+
+def find_side_lanes(grid):
+    height, width = grid.shape
+    # grid[0, 1:width - 1] = grid[height - 1, 1:width - 1] = grid[1:height - 1, 0] = grid[1:height - 1, width - 1] = -2
+    grid[0, grid[0] == 0] = -3
+    grid[height - 1, grid[height - 1] == 0] = -2
+    grid[grid[:, 0] == 0, 0] = -3
+    grid[grid[:, width - 1] == 0, width - 1] = -2
+    for y in range(height):
+        for x in range(width):
+            if grid[y, x] == 0:
+                if x > 0 and grid[y, x - 1] >= 1:
+                    grid[y, x] = -3  # Mark as left side lane
+                elif x < width - 1 and grid[y, x + 1] >= 1:
+                    grid[y, x] = -2  # Mark as right side lane
+                elif y > 0 and grid[y - 1, x] >= 1:
+                    grid[y, x] = -3
+                elif y < height - 1 and grid[y + 1, x] >= 1:
+                    grid[y, x] = -2
+    return grid
+
+
 def export_grid(grid, filename):
     with open(filename, 'w') as f:
         for row in grid:
@@ -87,8 +160,8 @@ def export_grid(grid, filename):
 
 
 def visualize_grid(grid):
-    cmap = ListedColormap(['black', 'lightgray', 'white', 'red', 'blue'])
-    # 0 - Roads, 1 - General Buildings, 2 - Hospitals, 3 - Fire Departments, 4 - Police Stations
+    cmap = ListedColormap(['purple', 'pink', 'orange', 'black', 'lightgray', 'white', 'red', 'blue'])
+    # 0 - Tiles.Roads, 1 - General Buildings, 2 - Hospitals, 3 - Fire Departments, 4 - Police Stations
 
     fig, ax = plt.subplots()
     cax = ax.matshow(grid, cmap=cmap, interpolation='nearest')
@@ -100,17 +173,23 @@ def visualize_grid(grid):
 
     for y in range(len(grid)):
         for x in range(len(grid[y])):
-            if grid[y, x] > 1:  # Only annotate special buildings
-                ax.text(x, y, 'H' if grid[y, x] == 2 else 'F' if grid[y, x] == 3 else 'P',
+            if grid[y, x] > 1 or grid[y, x] < 0:  # Only annotate special buildings
+                ax.text(x, y,
+                        'H' if grid[y, x] == 2 else
+                        'F' if grid[y, x] == 3 else
+                        'P' if grid[y, x] == 4 else
+                        'I' if grid[y, x] == -1 else
+                        'R' if grid[y, x] == -2 else 'L',
                         ha='center', va='center', color='black')
 
     plt.title('GridWorld Visualization')
+    plt.tight_layout()
     plt.show()
 
 
 if __name__ == "__main__":
     # Define grid dimensions and number of buildings
-    width, height = 20, 20
+    width, height = 5 * 4 + 2, 5 * 4 + 2
     num_hospitals = 3
     num_police_stations = 1
     num_fire_departments = 2
@@ -120,6 +199,12 @@ if __name__ == "__main__":
 
     # Assign roles to buildings
     grid = assign_roles(grid, num_hospitals, num_police_stations, num_fire_departments)
+
+    # Find and mark intersections
+    grid = find_intersections(grid)
+
+    # Find and mark side lanes
+    grid = find_side_lanes(grid)
 
     print(grid)
     print(grid.shape)
