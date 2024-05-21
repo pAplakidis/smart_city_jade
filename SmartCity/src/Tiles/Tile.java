@@ -3,7 +3,9 @@ package Tiles;
 public class Tile {
     private final int x;
     private final int y;
-    private final int value;
+    private int value;
+
+    private int carId = 0;
 
     public Tile(int x, int y, int value) {
         this.x = x;
@@ -27,6 +29,16 @@ public class Tile {
 
     public int getValue() {
         return value;
+    }
+
+    public void setValue(int val){
+        value = val;
+    }
+
+    public int getCarId(){return carId;}
+
+    public void setCarId(int id){
+        carId = id;
     }
 
     @Override

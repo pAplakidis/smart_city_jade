@@ -1,0 +1,11 @@
+unassigned road:   0
+intersesections:  -1
+right-lane:       -2
+left-lane:        -3
+
+random building:  1
+hospital building:2
+fire building:    3
+police building:  4
+
+

@@ -1,3 +1,5 @@
+package State;
+
 import Tiles.*;
 import Tiles.Roads.*;
 import Tiles.Buildings.*;
@@ -7,7 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class GridLoader {
-    protected static Tile[][] loadGridFromFile(String filename) {
+    public static Tile[][] loadGridFromFile(String filename) {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line = br.readLine();
             int rows = 0;
