@@ -89,7 +89,7 @@ public class Navigator {
                 System.out.println("Enter: " + enterTile);
                 int nextX = x;
                 int nextY = y;
-                //#TODO: Just do something better. This is a mess. And probably doesn't work with larger intersections.
+                //TODO: Just do something better. This is a mess. And probably doesn't work with larger intersections.
                 while (((isRoadTile(nextX, nextY + 1, -1) || isRoadTile(nextX, nextY + 1, -2))
                         && availableMove(enterTile, grid[nextX][nextY + 1])) || (nextY + 1 == grid[0].length && y + 1 != grid[0].length)) {
                     if (isRoadTile(nextX, nextY + 1, -2) || (nextY + 1 == grid[0].length)) {
