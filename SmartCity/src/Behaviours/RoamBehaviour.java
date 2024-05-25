@@ -5,6 +5,8 @@ import Tiles.Tile;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 
+import java.util.concurrent.TimeUnit;
+
 public class RoamBehaviour extends Behaviour {
     private GlobalState globalState;
     private int[] agentLocation;

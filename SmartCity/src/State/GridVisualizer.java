@@ -36,35 +36,41 @@ public class GridVisualizer extends JPanel {
         for (int y = 0; y < grid.length; y++) {
             for (int x = 0; x < grid[y].length; x++) {
                 int cellValue = grid[y][x].getValue();
-                switch (cellValue) {
-                    case -3:
-                        g.setColor(Color.MAGENTA);
-                        break;
-                    case -2:
-                        g.setColor(Color.PINK);
-                        break;
-                    case -1:
-                        g.setColor(Color.ORANGE);
-                        break;
-                    case 0:
-                        g.setColor(Color.BLACK);
-                        break; // Roads
-                    case 1:
-                        g.setColor(Color.LIGHT_GRAY);
-                        break; // General Buildings
-                    case 2:
-                        g.setColor(Color.WHITE);
-                        break;   // Hospitals
-                    case 3:
-                        g.setColor(Color.RED);
-                        break;  // Fire Departments
-                    case 4:
-                        g.setColor(Color.BLUE);
-                        break; // Police Stations
-                    default:
-                        g.setColor(Color.GREEN);
-                        break; // Undefined
-                }
+                int carValue = grid[y][x].getCarId();
+
+                // TODO: color based on car type
+                if(carValue != 0){
+                    g.setColor(Color.darkGray);
+                }else{
+                    switch (cellValue) {
+                        case -3:
+                            g.setColor(Color.MAGENTA);
+                            break;
+                        case -2:
+                            g.setColor(Color.PINK);
+                            break;
+                        case -1:
+                            g.setColor(Color.ORANGE);
+                            break;
+                        case 0:
+                            g.setColor(Color.BLACK);
+                            break; // Roads
+                        case 1:
+                            g.setColor(Color.LIGHT_GRAY);
+                            break; // General Buildings
+                        case 2:
+                            g.setColor(Color.WHITE);
+                            break;   // Hospitals
+                        case 3:
+                            g.setColor(Color.RED);
+                            break;  // Fire Departments
+                        case 4:
+                            g.setColor(Color.BLUE);
+                            break; // Police Stations
+                        default:
+                            g.setColor(Color.GREEN);
+                            break; // Undefined
+                }}
                 g.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
                 g.setColor(Color.GRAY); // Grid lines color
                 g.drawRect(x * cellSize, y * cellSize, cellSize, cellSize);
@@ -72,31 +78,18 @@ public class GridVisualizer extends JPanel {
                 // Draw text annotations for special buildings
                 g.setColor(Color.BLACK);
                 String text;
-                switch(cellValue){
-                    case -1:
-                        text = "I";
-                        break;
-                    case -2:
-                        text = "R";
-                        break;
-                    case -3:
-                        text = "L";
-                        break;
-                    case 2:
-                        text = "H";
-                        break;
-                    case 3:
-                        text = "F";
-                        break;
-                    case 4:
-                        text = "P";
-                        break;
-                    case 5:
-                        text = "C";
-                        break;
-                    default:
-                        text = "";
-                        break;
+                if(carValue != 0){
+                    text = "C";
+                }else {
+                    text = switch (cellValue) {
+                        case -1 -> "I";
+                        case -2 -> "R";
+                        case -3 -> "L";
+                        case 2 -> "H";
+                        case 3 -> "F";
+                        case 4 -> "P";
+                        default -> "";
+                    };
                 }
 //                String text = cellValue == -1 ? "I" : cellValue == -2 ? "R" : cellValue == -3 ? "L" : cellValue == 2 ? "H" : cellValue == 3 ? "F" : cellValue == 4 ? "P" : "";
                 g.drawString(text, x * cellSize + cellSize / 2 - 4, y * cellSize + cellSize / 2 + 4);

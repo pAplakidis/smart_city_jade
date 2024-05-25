@@ -34,6 +34,7 @@ public class GlobalState {
         }
     }
 
+    // TODO: use setCarLocation
     public void moveCar(int oldX, int oldY, int x, int y, int id){
         if(grid != null) {
             grid[oldY][oldX].setCarId(0);

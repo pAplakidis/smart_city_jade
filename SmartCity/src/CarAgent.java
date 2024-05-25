@@ -3,7 +3,7 @@ import State.GlobalState;
 import jade.core.Agent;
 
 public class CarAgent extends Agent {
-    private int[] location = new int[]{0, 0};
+    private int[] location = new int[]{0, 2};
     private int id = 5; // TODO: temp, use JADE ID
     private GlobalState globalState;
 
