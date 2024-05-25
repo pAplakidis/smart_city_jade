@@ -4,7 +4,7 @@ import jade.core.Agent;
 
 public class CarAgent extends Agent {
     private int[] location = new int[]{0, 0};
-    private int id = 5;
+    private int id = 5; // TODO: temp, use JADE ID
     private GlobalState globalState;
 
     public int[] getLocation(){
@@ -20,7 +20,6 @@ public class CarAgent extends Agent {
         System.out.println("[CarAgent] Accessed Grid");
 
         globalState.setCarLocation(location[0], location[1], id);
-        globalState.showGrid();
 
         addBehaviour(new RoamBehaviour(this, location, id));
     }

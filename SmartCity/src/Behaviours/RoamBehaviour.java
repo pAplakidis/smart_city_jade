@@ -35,7 +35,6 @@ public class RoamBehaviour extends Behaviour {
         agentLocation[1] = newY;
 
         globalState.moveCar(x, y, newX, newY, agentId);
-        globalState.showGrid();
     }
 
     @Override

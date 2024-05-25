@@ -1,1 +1,1 @@
-http://largeee:7778/acc
+http://smol.zte.com.cn:7778/acc

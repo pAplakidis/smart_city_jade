@@ -2,12 +2,17 @@ package State;
 
 import Tiles.Tile;
 
+import javax.swing.*;
+
 public class GlobalState {
     private Tile[][] grid;
     private static GlobalState instance;
+    private GridVisualizer visualizer;
+    private JFrame frame;
 
     private GlobalState(){
         grid = GridLoader.loadGridFromFile("grid_world.txt");
+        initDisplay();
     }
 
     public static synchronized  GlobalState getInstance(){
@@ -22,27 +27,43 @@ public class GlobalState {
     }
 
     public void setCarLocation(int x, int y, int id){
-        grid[y][x].setCarId(id);
-        System.out.println("[State.GlobalState] Grid state changed");
+        if(grid != null) {
+            grid[y][x].setCarId(id);
+            System.out.println("[State.GlobalState] Grid state changed");
+            updateGridDisplay();
+        }
     }
 
     public void moveCar(int oldX, int oldY, int x, int y, int id){
-        grid[oldY][oldX].setCarId(0);
-        grid[y][x].setCarId(id);
-        System.out.println("[State.GlobalState] Grid state changed");
+        if(grid != null) {
+            grid[oldY][oldX].setCarId(0);
+            grid[y][x].setCarId(id);
+            System.out.println("[State.GlobalState] Grid state changed");
+            updateGridDisplay();
+        }
+    }
+
+    public void initDisplay(){
+        visualizer = new GridVisualizer(grid);
+        frame = new JFrame("Grid World Visualizer");
+        frame.add(visualizer);
+        frame.pack();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        showGrid();
     }
 
     public void showGrid(){
-        for (Tile[] row : grid) {
-            for (Tile element : row) {
-                if(element.getCarId() != 0){
-                    System.out.print(element.getCarId() + "\t");
-                }else{
-                    System.out.print(element.getValue() + "\t");
-                }
-            }
-            System.out.println();  // Move to the next line after each row
+        if(visualizer != null && grid != null) {
+            visualizer.printGrid(grid);
         }
-        System.out.println();
+    }
+
+    public void updateGridDisplay(){
+        if(visualizer != null && grid != null && frame != null){
+            visualizer.updateGrid(grid);
+            showGrid();
+        }
     }
 }

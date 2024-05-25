@@ -1,62 +1,31 @@
-import State.GridLoader;
+package State;
+
 import Tiles.RoadTile;
 import Tiles.Tile;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.List;
 
 public class GridVisualizer extends JPanel {
-    private int[][] grid;
+    private Tile[][] grid;
     private List<Tile> path;
     private int cellSize = 30; // Size of each cell in the grid
 
-    public GridVisualizer(String filename) {
-        grid = loadGridFromFile(filename);
+
+    public GridVisualizer(Tile[][] grid) {
+        this.grid = grid;
         this.setPreferredSize(new Dimension(grid[0].length * cellSize + 20, grid.length * cellSize + 20));
+    }
+
+    public void updateGrid(Tile[][] newGrid){
+        this.grid = newGrid;
+        repaint();
     }
 
     public void setPath(List<Tile> path) {
         this.path = path;
         repaint();
-    }
-
-    private int[][] loadGridFromFile(String filename) {
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
-            String line = br.readLine();
-            int rows = 0;
-            int cols = line.split(" ").length;
-
-            // First, count the number of rows
-            while (line != null) {
-                rows++;
-                line = br.readLine();
-            }
-
-            // Now, read the file again to fill the grid
-            int[][] grid = new int[rows][cols];
-            br.close();
-
-            BufferedReader br2 = new BufferedReader(new FileReader(filename));
-            int row = 0;
-            line = br2.readLine();
-            while (line != null) {
-                String[] values = line.split(" ");
-                for (int col = 0; col < cols; col++) {
-                    grid[row][col] = Integer.parseInt(values[col]);
-                }
-                row++;
-                line = br2.readLine();
-            }
-            br2.close();
-            return grid;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     @Override
@@ -66,7 +35,7 @@ public class GridVisualizer extends JPanel {
 
         for (int y = 0; y < grid.length; y++) {
             for (int x = 0; x < grid[y].length; x++) {
-                int cellValue = grid[y][x];
+                int cellValue = grid[y][x].getValue();
                 switch (cellValue) {
                     case -3:
                         g.setColor(Color.MAGENTA);
@@ -102,7 +71,34 @@ public class GridVisualizer extends JPanel {
 
                 // Draw text annotations for special buildings
                 g.setColor(Color.BLACK);
-                String text = cellValue == -1 ? "I" : cellValue == -2 ? "R" : cellValue == -3 ? "L" : cellValue == 2 ? "H" : cellValue == 3 ? "F" : cellValue == 4 ? "P" : "";
+                String text;
+                switch(cellValue){
+                    case -1:
+                        text = "I";
+                        break;
+                    case -2:
+                        text = "R";
+                        break;
+                    case -3:
+                        text = "L";
+                        break;
+                    case 2:
+                        text = "H";
+                        break;
+                    case 3:
+                        text = "F";
+                        break;
+                    case 4:
+                        text = "P";
+                        break;
+                    case 5:
+                        text = "C";
+                        break;
+                    default:
+                        text = "";
+                        break;
+                }
+//                String text = cellValue == -1 ? "I" : cellValue == -2 ? "R" : cellValue == -3 ? "L" : cellValue == 2 ? "H" : cellValue == 3 ? "F" : cellValue == 4 ? "P" : "";
                 g.drawString(text, x * cellSize + cellSize / 2 - 4, y * cellSize + cellSize / 2 + 4);
             }
         }
@@ -141,6 +137,20 @@ public class GridVisualizer extends JPanel {
         }
     }
 
+    public void printGrid(Tile[][] grid){
+        for (Tile[] row : grid) {
+            for (Tile element : row) {
+                if(element.getCarId() != 0){
+                    System.out.print(element.getCarId() + "\t");
+                }else{
+                    System.out.print(element.getValue() + "\t");
+                }
+            }
+            System.out.println();  // Move to the next line after each row
+        }
+        System.out.println();
+    }
+
     private Color blendColors(Color c1, Color c2, float ratio) {
         int red = (int) (c1.getRed() * (1 - ratio) + c2.getRed() * ratio);
         int green = (int) (c1.getGreen() * (1 - ratio) + c2.getGreen() * ratio);
@@ -149,10 +159,10 @@ public class GridVisualizer extends JPanel {
     }
 
     public static void main(String[] args) {
-        String filename = "grid_world.txt"; // Path to your grid file
+        Tile[][] grid = GridLoader.loadGridFromFile("grid_world.txt");
 
         JFrame frame = new JFrame("Grid World Visualizer");
-        GridVisualizer visualizer = new GridVisualizer(filename);
+        GridVisualizer visualizer = new GridVisualizer(grid);
         frame.add(visualizer);
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -160,26 +170,10 @@ public class GridVisualizer extends JPanel {
         frame.setVisible(true);
 
         // Example usage:
-        Tile[][] grid = GridLoader.loadGridFromFile(filename);
-
         Navigator navigator = new Navigator(grid);
         assert grid != null;
-        RoadTile start = null;
-        RoadTile end = null;
-        while (start == null) {
-            Tile tile = grid[(int) (Math.random() * grid.length)][(int) (Math.random() * grid[0].length)];
-            if (tile instanceof RoadTile) {
-                start = (RoadTile) tile;
-            }
-        }
-        while (end == null) {
-            Tile tile = grid[(int) (Math.random() * grid.length)][(int) (Math.random() * grid[0].length)];
-            if (tile instanceof RoadTile) {
-                end = (RoadTile) tile;
-            }
-        }
-        System.out.println("Start: (" + start.getX() + ", " + start.getY() + ", " + start.getValue() + ")");
-        System.out.println("End: (" + end.getX() + ", " + end.getY() + ", " + end.getValue() + ")");
+        RoadTile start = (RoadTile) grid[0][0];
+        RoadTile end = (RoadTile) grid[10][5];
 
         List<Tile> path = navigator.findPath(start, end);
         visualizer.setPath(path);
