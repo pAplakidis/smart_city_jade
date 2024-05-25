@@ -1,6 +1,4 @@
-package Tiles.Roads;
-
-import Tiles.Tile;
+package Tiles;
 
 public class RoadTile extends Tile {
     public RoadTile(int x, int y, int value) {

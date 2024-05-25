@@ -1,6 +1,4 @@
-package Tiles.Buildings;
-
-import Tiles.Tile;
+package Tiles;
 
 public class BuildingTile extends Tile {
     public BuildingTile(int x, int y, int value) {

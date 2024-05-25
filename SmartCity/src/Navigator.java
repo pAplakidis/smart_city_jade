@@ -1,6 +1,6 @@
 import State.GridLoader;
 import Tiles.Tile;
-import Tiles.Roads.RoadTile;
+import Tiles.RoadTile;
 
 import java.util.*;
 
@@ -49,10 +49,7 @@ public class Navigator {
 
             closedSet.add(current.tile);
 
-            System.out.println("Current: " + current.tile.getX() + " " + current.tile.getY() + " " + current.tile.getValue());
-
-            for (Tile neighbor : getNeighbors(current.tile)) {
-                System.out.println("Neighbor: " + neighbor.getX() + " " + neighbor.getY() + " " + neighbor.getValue() + " " + closedSet.size());
+            for (Tile neighbor : getNeighbors(current)) {
                 if (closedSet.contains(neighbor)) {
                     continue;
                 }
@@ -70,21 +67,95 @@ public class Navigator {
         return Collections.emptyList();  // No path found
     }
 
-    private List<Tile> getNeighbors(Tile tile) {
+    private List<Tile> getNeighbors(Node current) {
         List<Tile> neighbors = new ArrayList<>();
-        int x = tile.getX();
-        int y = tile.getY();
+        int x = current.tile.getX();
+        int y = current.tile.getY();
 
-        if (isRoadTile(x - 1, y)) neighbors.add(grid[x - 1][y]);
-        if (isRoadTile(x + 1, y)) neighbors.add(grid[x + 1][y]);
-        if (isRoadTile(x, y - 1)) neighbors.add(grid[x][y - 1]);
-        if (isRoadTile(x, y + 1)) neighbors.add(grid[x][y + 1]);
+        switch (current.tile.getValue()) {
+            case -3:
+                if (isRoadTile(x + 1, y, -1) || isRoadTile(x + 1, y, -3)) neighbors.add(grid[x + 1][y]);
+                if (isRoadTile(x, y - 1, -1) || isRoadTile(x, y - 1, -3)) neighbors.add(grid[x][y - 1]);
+                break;
+            case -2:
+                if (isRoadTile(x - 1, y, -1) || isRoadTile(x - 1, y, -2)) neighbors.add(grid[x - 1][y]);
+                if (isRoadTile(x, y + 1, -1) || isRoadTile(x, y + 1, -2)) neighbors.add(grid[x][y + 1]);
+                break;
+            case -1:
+                Node enterNode = current.parent;
+                while (enterNode != null && isRoadTile(enterNode.tile.getX(), enterNode.tile.getY(), -1)) enterNode = enterNode.parent;
+                RoadTile enterTile = enterNode == null ? null : (RoadTile) enterNode.tile;
+                System.out.println("Enter: " + enterTile);
+                int nextX = x;
+                int nextY = y;
+                //#TODO: Just do something better. This is a mess. And probably doesn't work with larger intersections.
+                while (((isRoadTile(nextX, nextY + 1, -1) || isRoadTile(nextX, nextY + 1, -2))
+                        && availableMove(enterTile, grid[nextX][nextY + 1])) || (nextY + 1 == grid[0].length && y + 1 != grid[0].length)) {
+                    if (isRoadTile(nextX, nextY + 1, -2) || (nextY + 1 == grid[0].length)) {
+                        neighbors.add(grid[x][y + 1]);
+                        break;
+                    }
+                    nextY++;
+                }
+                nextX = x;
+                nextY = y;
+                while (((isRoadTile(nextX, nextY - 1, -1) || isRoadTile(nextX, nextY - 1, -3))
+                        && availableMove(enterTile, grid[nextX][nextY - 1])) || nextY - 1 == -1 && y - 1 != -1) {
+                    if (isRoadTile(nextX, nextY - 1, -3) || (nextY - 1 == -1)) {
+                        neighbors.add(grid[x][y - 1]);
+                        break;
+                    }
+                    nextY--;
+                }
+                nextX = x;
+                nextY = y;
+                while (((isRoadTile(nextX + 1, nextY, -1) || isRoadTile(nextX + 1, nextY, -3))
+                        && availableMove(enterTile, grid[nextX + 1][nextY])) || nextX + 1 == grid.length) {
+                    if (isRoadTile(nextX + 1, nextY, -3) || (nextX + 1 == grid.length && x + 1 != grid.length)) {
+                        neighbors.add(grid[x + 1][y]);
+                        break;
+                    }
+                    nextX++;
+                }
+                nextX = x;
+                nextY = y;
+                while (((isRoadTile(nextX - 1, nextY, -1) || isRoadTile(nextX - 1, nextY, -2))
+                        && availableMove(enterTile, grid[nextX - 1][nextY])) || (nextX - 1 == -1 && x - 1 != -1)) {
+                    if (isRoadTile(nextX - 1, nextY, -2) || (nextX - 1 == -1)) {
+                        neighbors.add(grid[x - 1][y]);
+                        break;
+                    }
+                    nextX--;
+                }
+                break;
+            default:
+                if (isRoadTile(x - 1, y)) neighbors.add(grid[x - 1][y]);
+                if (isRoadTile(x + 1, y)) neighbors.add(grid[x + 1][y]);
+                if (isRoadTile(x, y - 1)) neighbors.add(grid[x][y - 1]);
+                if (isRoadTile(x, y + 1)) neighbors.add(grid[x][y + 1]);
+        }
 
+//        if (isRoadTile(x - 1, y)) neighbors.add(grid[x - 1][y]);
+//        if (isRoadTile(x + 1, y)) neighbors.add(grid[x + 1][y]);
+//        if (isRoadTile(x, y - 1)) neighbors.add(grid[x][y - 1]);
+//        if (isRoadTile(x, y + 1)) neighbors.add(grid[x][y + 1]);
+//
         return neighbors;
+    }
+
+    private boolean availableMove(RoadTile enterTile, Tile nextTile) {
+        if (enterTile != null && enterTile.getValue() != -1 && nextTile.getValue() != -1 && enterTile.getValue() != nextTile.getValue()) {
+            return enterTile.getX() != nextTile.getX() && enterTile.getY() != nextTile.getY();
+        }
+        return true;
     }
 
     private boolean isRoadTile(int x, int y) {
         return x >= 0 && x < grid.length && y >= 0 && y < grid[0].length && grid[x][y] instanceof RoadTile;
+    }
+
+    private boolean isRoadTile(int x, int y, int value) {
+        return x >= 0 && x < grid.length && y >= 0 && y < grid[0].length && grid[x][y] instanceof RoadTile && grid[x][y].getValue() == value;
     }
 
     private double getHeuristicCost(Tile a, Tile b) {
@@ -114,6 +185,8 @@ public class Navigator {
         RoadTile end = (RoadTile) grid[10][5];
 
         List<Tile> path = navigator.findPath(start, end);
+
+        System.out.println("Path length: " + path.size());
 
         for (Tile tile : path) {
             System.out.println("Path: (" + tile.getX() + ", " + tile.getY() + ", " + tile.getValue() + ")");

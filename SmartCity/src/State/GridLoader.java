@@ -1,8 +1,6 @@
 package State;
 
 import Tiles.*;
-import Tiles.Roads.*;
-import Tiles.Buildings.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

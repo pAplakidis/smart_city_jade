@@ -1,5 +1,5 @@
 import State.GridLoader;
-import Tiles.Roads.RoadTile;
+import Tiles.RoadTile;
 import Tiles.Tile;
 
 import javax.swing.*;
@@ -16,6 +16,7 @@ public class GridVisualizer extends JPanel {
 
     public GridVisualizer(String filename) {
         grid = loadGridFromFile(filename);
+        this.setPreferredSize(new Dimension(grid[0].length * cellSize + 20, grid.length * cellSize + 20));
     }
 
     public void setPath(List<Tile> path) {
@@ -120,6 +121,15 @@ public class GridVisualizer extends JPanel {
                 g.drawString(String.valueOf(i + 1), y * cellSize + cellSize / 2 - 4, x * cellSize + cellSize / 2 + 4); // Draw the order number
             }
         }
+
+        // Draw axis labels
+        g.setColor(Color.BLACK);
+        for (int i = 0; i < grid.length; i++) {
+            g.drawString(String.valueOf(i), 0, i * cellSize + 10);
+        }
+        for (int j = 0; j < grid[0].length; j++) {
+            g.drawString(String.valueOf(j), j * cellSize, 10);
+        }
     }
 
     @Override
@@ -154,8 +164,22 @@ public class GridVisualizer extends JPanel {
 
         Navigator navigator = new Navigator(grid);
         assert grid != null;
-        RoadTile start = (RoadTile) grid[0][0];
-        RoadTile end = (RoadTile) grid[10][5];
+        RoadTile start = null;
+        RoadTile end = null;
+        while (start == null) {
+            Tile tile = grid[(int) (Math.random() * grid.length)][(int) (Math.random() * grid[0].length)];
+            if (tile instanceof RoadTile) {
+                start = (RoadTile) tile;
+            }
+        }
+        while (end == null) {
+            Tile tile = grid[(int) (Math.random() * grid.length)][(int) (Math.random() * grid[0].length)];
+            if (tile instanceof RoadTile) {
+                end = (RoadTile) tile;
+            }
+        }
+        System.out.println("Start: (" + start.getX() + ", " + start.getY() + ", " + start.getValue() + ")");
+        System.out.println("End: (" + end.getX() + ", " + end.getY() + ", " + end.getValue() + ")");
 
         List<Tile> path = navigator.findPath(start, end);
         visualizer.setPath(path);

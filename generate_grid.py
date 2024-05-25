@@ -25,8 +25,6 @@ def generate_grid(width, height):
     return grid
 
 
-# TODO: assign whole block as a type
-# TODO: need better/random building assignment
 def flood_fill(grid, x, y, new_val):
     target_val = grid[y, x]
     if target_val != 1:

@@ -1,5 +1,5 @@
 package Tiles;
-
+//TODO: Use ENUM for tile types
 public class Tile {
     private final int x;
     private final int y;
