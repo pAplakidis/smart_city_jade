@@ -1,8 +1,10 @@
 package State;
 
+import Tiles.RoadTile;
 import Tiles.Tile;
 
 import javax.swing.*;
+import java.util.List;
 
 public class GlobalState {
     private Tile[][] grid;
@@ -64,6 +66,13 @@ public class GlobalState {
     public void updateGridDisplay(){
         if(visualizer != null && grid != null && frame != null){
             visualizer.updateGrid(grid);
+            showGrid();
+        }
+    }
+
+    public void updatePathDisplay(List<Tile> path){
+        if(visualizer != null && grid != null && frame != null){
+            visualizer.setPath(path);
             showGrid();
         }
     }

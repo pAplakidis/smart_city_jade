@@ -117,6 +117,10 @@ public class GridVisualizer extends JPanel {
                 Tile tile = path.get(i);
                 int x = tile.getX();
                 int y = tile.getY();
+                if(grid[x][y].getCarId() != 0){
+                    continue;
+                }
+
                 float ratio = (float) i / path.size();
                 Color color = blendColors(Color.GREEN, new Color(0, 100, 0), ratio);
                 g.setColor(color);

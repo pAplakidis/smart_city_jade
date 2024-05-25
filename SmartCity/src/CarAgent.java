@@ -21,7 +21,7 @@ public class CarAgent extends Agent {
 
         globalState.setCarLocation(location[0], location[1], id);
 
-        addBehaviour(new RoamBehaviour(this, location, id));
+        addBehaviour(new RoamBehaviour(this, location, id, 15, 3));
     }
 
     public void move(int x, int y){
