@@ -71,6 +71,7 @@ public class RoamBehaviour extends Behaviour {
             return;
         }
         pathIdx++;
+        myAgent.doWait(1000);
     }
 
     @Override
