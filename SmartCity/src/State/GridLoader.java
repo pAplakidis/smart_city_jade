@@ -56,6 +56,23 @@ public class GridLoader {
                     }
                 }
             }
+            boolean[] is_priority_road = new boolean[grid.length];
+            for (int i = 0; i < grid.length; i++) is_priority_road[i] = true;
+
+            for (row = 0; row < grid.length; row++) {
+                for (int col = 0; col < grid[row].length; col++) {
+                    if (grid[row][col] instanceof BuildingTile) {  // Works only for our current map implementation
+                        is_priority_road[row] = false;
+                        break;
+                    }
+                }
+            }
+
+            for (row = 0; row < grid.length; row++) {
+                for (int col = 0; col < grid[row].length && is_priority_road[row]; col++) {
+                    if (grid[row][col].getValue() != -1) ((RoadTile) grid[row][col]).setPriority(true);  // convention that vertical roads are priority roads
+                }
+            }
             return grid;
         } catch (IOException e) {
             e.printStackTrace();

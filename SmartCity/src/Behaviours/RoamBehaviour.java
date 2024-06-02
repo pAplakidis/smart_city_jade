@@ -52,7 +52,7 @@ public class RoamBehaviour extends Behaviour {
         int x = agentLocation[0];
         int y = agentLocation[1];
 
-        if(pathIdx > path.size()){
+        if (pathIdx > path.size()) {
             navDone = true;
             return;
         }

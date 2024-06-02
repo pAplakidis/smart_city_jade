@@ -173,6 +173,18 @@ public class GridVisualizer extends JPanel {
     public static void main(String[] args) {
         Tile[][] grid = GridLoader.loadGridFromFile("grid_world.txt");
 
+        for (Tile[] row : grid) {
+            for (Tile tile : row) {
+                if (tile instanceof RoadTile) {
+                    System.out.print(((RoadTile) tile).hasPriority() ? "V" : "H");
+                } else {
+                    System.out.print(" ");
+                }
+                System.out.print(tile.getValue() + "\t");
+            }
+            System.out.println();
+        }
+
         JFrame frame = new JFrame("Grid World Visualizer");
         GridVisualizer visualizer = new GridVisualizer(grid);
         frame.add(visualizer);
@@ -183,9 +195,10 @@ public class GridVisualizer extends JPanel {
 
         // Example usage:
         Navigator navigator = new Navigator(grid);
+
         assert grid != null;
-        RoadTile start = (RoadTile) grid[0][0];
-        RoadTile end = (RoadTile) grid[10][5];
+        RoadTile start = (RoadTile) grid[2][0];
+        RoadTile end = (RoadTile) grid[13][23];
 
         List<Tile> path = navigator.findPath(start, end);
         visualizer.setPath(path);

@@ -86,7 +86,6 @@ public class Navigator {
                 Node enterNode = current.parent;
                 while (enterNode != null && isRoadTile(enterNode.tile.getX(), enterNode.tile.getY(), -1)) enterNode = enterNode.parent;
                 RoadTile enterTile = enterNode == null ? null : (RoadTile) enterNode.tile;
-                System.out.println("Enter: " + enterTile);
                 int nextX = x;
                 int nextY = y;
                 //TODO: Just do something better. This is a mess. And probably doesn't work with larger intersections.
@@ -182,8 +181,8 @@ public class Navigator {
         Tile[][] grid = GridLoader.loadGridFromFile("grid_world.txt");
 
         Navigator navigator = new Navigator(grid);
-        RoadTile start = (RoadTile) grid[0][0];
-        RoadTile end = (RoadTile) grid[10][5];
+        RoadTile start = (RoadTile) grid[2][0];
+        RoadTile end = (RoadTile) grid[3][19];
 
         List<Tile> path = navigator.findPath(start, end);
 
