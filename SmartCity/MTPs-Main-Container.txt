@@ -1,1 +1,1 @@
-http://smol.zte.com.cn:7778/acc
+http://192.168.1.15:7778/acc

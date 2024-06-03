@@ -1,11 +1,15 @@
 package Tiles;
+
+import Vehicles.CarAgent;
+import jade.core.Agent;
+
 //TODO: Use ENUM for tile types
 public class Tile {
     private final int x;
     private final int y;
     private int value;
 
-    private int carId = 0;
+    private CarAgent agent;
 
     public Tile(int x, int y, int value) {
         this.x = x;
@@ -35,10 +39,20 @@ public class Tile {
         value = val;
     }
 
-    public int getCarId(){return carId;}
+    // FIXME: visualizer doesn't show agents anymore
+    public int getCarId(){
+        if (agent == null){
+            return 0;
+        }
+        return agent.getId();
+    }
 
-    public void setCarId(int id){
-        carId = id;
+    public CarAgent getAgent(){
+        return agent;
+    }
+
+    public void setAgent(CarAgent val){
+        agent = val;
     }
 
     @Override

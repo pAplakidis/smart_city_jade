@@ -112,23 +112,23 @@ public class GridVisualizer extends JPanel {
         }
 
         // Draw the path with a gradient from green to dark green and numbers
-        if (path != null && !path.isEmpty()) {
-            for (int i = 0; i < path.size(); i++) {
-                Tile tile = path.get(i);
-                int x = tile.getX();
-                int y = tile.getY();
-                if(grid[x][y].getCarId() != 0){
-                    continue;
-                }
-
-                float ratio = (float) i / path.size();
-                Color color = blendColors(Color.GREEN, new Color(0, 100, 0), ratio);
-                g.setColor(color);
-                g.fillRect(y * cellSize, x * cellSize, cellSize, cellSize);
-                g.setColor(Color.BLACK);
-                g.drawString(String.valueOf(i + 1), y * cellSize + cellSize / 2 - 4, x * cellSize + cellSize / 2 + 4); // Draw the order number
-            }
-        }
+//        if (path != null && !path.isEmpty()) {
+//            for (int i = 0; i < path.size(); i++) {
+//                Tile tile = path.get(i);
+//                int x = tile.getX();
+//                int y = tile.getY();
+//                if(grid[x][y].getCarId() != 0){
+//                    continue;
+//                }
+//
+//                float ratio = (float) i / path.size();
+//                Color color = blendColors(Color.GREEN, new Color(0, 100, 0), ratio);
+//                g.setColor(color);
+//                g.fillRect(y * cellSize, x * cellSize, cellSize, cellSize);
+//                g.setColor(Color.BLACK);
+//                g.drawString(String.valueOf(i + 1), y * cellSize + cellSize / 2 - 4, x * cellSize + cellSize / 2 + 4); // Draw the order number
+//            }
+//        }
 
         // Draw axis labels
         g.setColor(Color.BLACK);
