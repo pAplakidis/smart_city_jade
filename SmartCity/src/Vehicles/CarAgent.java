@@ -13,6 +13,15 @@ public class CarAgent extends Agent {
     private int[] location = new int[]{0, 2};   // TODO: make this random
     private int id;
     private GlobalState globalState;
+    private boolean crashed = false;
+
+    public boolean getCrashed(){
+        return crashed;
+    }
+
+    public void setCrashed(boolean val){
+        crashed = val;
+    }
 
     public int getId(){
         return id;
@@ -27,24 +36,15 @@ public class CarAgent extends Agent {
         private List<Tile> path;
         private int pathIdx;
         private boolean navDone;
-        private boolean crashed = false;
-
-        public boolean getCrashed(){
-            return crashed;
-        }
-
-        public void setCrashed(boolean val){
-            crashed = val;
-        }
 
         // TODO: this is not a roam but a goTo
         // TODO: pick random point (check if valid)
         public RoamBehaviour(Agent a, CarAgent agent, int newX, int newY){
             super(a);
-
+            System.out.println("[agent] " + myAgent.getAID().getLocalName());
             // init variables
             this.globalState = GlobalState.getInstance();
-            this.myAgent = agent;
+            this.myCarAgent = agent;
             navigator = new Navigator(globalState.getGrid());
             navDone = false;
             this.newX = newX;

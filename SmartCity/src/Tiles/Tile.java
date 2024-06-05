@@ -39,7 +39,6 @@ public class Tile {
         value = val;
     }
 
-    // FIXME: visualizer doesn't show agents anymore
     public int getCarId(){
         if (agent == null){
             return 0;

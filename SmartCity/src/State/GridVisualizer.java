@@ -12,7 +12,6 @@ public class GridVisualizer extends JPanel {
     private List<Tile> path;
     private int cellSize = 30; // Size of each cell in the grid
 
-
     public GridVisualizer(Tile[][] grid) {
         this.grid = grid;
         this.setPreferredSize(new Dimension(grid[0].length * cellSize + 20, grid.length * cellSize + 20));
@@ -80,7 +79,8 @@ public class GridVisualizer extends JPanel {
                 g.setColor(Color.BLACK);
                 String text;
                 if (carValue != 0) {
-                    text = "C";
+//                    text = "C";
+                    text = Integer.toString(carValue);
                 } else {
                     switch (cellValue) {
                         case -1:

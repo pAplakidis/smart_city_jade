@@ -16,6 +16,7 @@ public class GlobalState {
     private GlobalState(){
         grid = GridLoader.loadGridFromFile("grid_world.txt");
         initDisplay();
+        System.out.println("[GlobalState] initialized grid and display");
     }
 
     public static synchronized  GlobalState getInstance(){
@@ -44,6 +45,10 @@ public class GlobalState {
     public int moveCar(int oldX, int oldY, int x, int y, CarAgent agent){
         int status = 0;
 
+        if(agent == null){
+            return 0;
+        }
+
         if(grid == null) {
             return 0;
         }
@@ -58,6 +63,7 @@ public class GlobalState {
             // TODO: stop car we crashed into as well
             // get the agent of that location and set a boolean for it to stop
             System.out.printf("[GlobalState] Crash detected: Car%d[%d,%d] - Car%d[%d,%d]\n", agent.getId(), oldY, oldX, possibleCrashId, y, x);
+            grid[y][x].getAgent().setCrashed(true);
             status = 2;
         }
 
