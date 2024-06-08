@@ -66,6 +66,8 @@ public class CarAgent extends Agent {
             int x = location[0];
             int y = location[1];
 
+            boolean hasPriority = ((RoadTile)globalState.getGrid()[y][x]).hasPriority();
+
             if (pathIdx > path.size()) {
                 navDone = true;
                 return;
@@ -116,7 +118,7 @@ public class CarAgent extends Agent {
         System.out.println("[Vehicles.CarAgent] Accessed Grid with id: " + id);
 
         globalState.setCarLocation(location[0], location[1], this);
-        addBehaviour(new RoamBehaviour(this, this, 2, 6));
+        addBehaviour(new RoamBehaviour(this, this, 3, 6));
     }
 }
 
