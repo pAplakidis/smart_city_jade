@@ -54,6 +54,7 @@ public class GlobalState {
         }
 
         // check for crash
+        CarAgent possibleCrashAgent = grid[y][x].getAgent();
         int possibleCrashId = grid[y][x].getCarId();
         if(possibleCrashId == 0){
             grid[oldY][oldX].setAgent(null);
@@ -63,7 +64,7 @@ public class GlobalState {
             // TODO: stop car we crashed into as well
             // get the agent of that location and set a boolean for it to stop
             System.out.printf("[GlobalState] Crash detected: Car%d[%d,%d] - Car%d[%d,%d]\n", agent.getId(), oldY, oldX, possibleCrashId, y, x);
-            grid[y][x].getAgent().setCrashed(true);
+            possibleCrashAgent.setCrashed(true);
             status = 2;
         }
 
@@ -100,5 +101,72 @@ public class GlobalState {
             visualizer.setPath(path);
             showGrid();
         }
+    }
+
+    // given an intersection, check if there are other cars in the radius of the intersection (relatively to the car)
+    public boolean checkCarsInIntersection(int x, int y, int carId, int carX, int carY, int radius){
+        // moving right
+        if(x > carX){
+            // check tiles of interseciton + radius
+            for(int i=0; i < radius + 1; i++){
+                // check left (x stays the same)
+                boolean checkLeft = (grid[y-i][x].getCarId() != 0);
+                // check right (x + 1)
+                boolean checkRight = (grid[y+i][x+1].getCarId() != 0);
+                // check forward (not if greedy)
+                boolean checkForward = (radius >= 2 && grid[y-1][x-1+1+i].getCarId() != 0);
+
+                if(checkLeft || checkRight || checkForward){
+                    return true;
+                }
+            }
+        // moving left
+        }else if(x < carX){
+            // check tiles of interseciton + radius
+            for(int i=0; i < radius + 1; i++){
+                // check left (y stays the same)
+                boolean checkLeft = (grid[y+i][x].getCarId() != 0);
+                // check right (y + 1)
+                boolean checkRight = (grid[y-i][x-1].getCarId() != 0);
+                // check forward (not if greedy)
+                boolean checkForward = (radius >= 2 && grid[y+1][x-1-i].getCarId() != 0);
+
+                if(checkLeft || checkRight || checkForward){
+                    return true;
+                }
+            }
+        // moving up
+        }else if(y > carY){
+            // check tiles of interseciton + radius
+            for(int i=0; i < radius + 1; i++){
+                // check left (y stays the same)
+                boolean checkLeft = (grid[y][x-i].getCarId() != 0);
+                // check right (y + 1)
+                boolean checkRight = (grid[y+1][x+i].getCarId() != 0);
+                // check forward (not if greedy)
+                boolean checkForward = (radius >= 2 && grid[y+1+i][x-1].getCarId() != 0);
+
+                if(checkLeft || checkRight || checkForward){
+                    return true;
+                }
+            }
+        // moving down
+        }else if(y < carY){
+            // check tiles of interseciton + radius
+            for(int i=0; i < radius + 1; i++){
+                // check left (y stays the same)
+                boolean checkLeft = (grid[y][x+i].getCarId() != 0);
+                // check right (y + 1)
+                boolean checkRight = (grid[y-1][x-i].getCarId() != 0);
+                // check forward (not if greedy)
+                boolean checkForward = (radius >= 2 && grid[y-1-i][x+1].getCarId() != 0);
+
+                if(checkLeft || checkRight || checkForward){
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
