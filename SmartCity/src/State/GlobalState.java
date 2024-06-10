@@ -103,10 +103,13 @@ public class GlobalState {
         }
     }
 
+    // FIXME: bug for Y (checking above is y-n not y+n, unlike x)
     // given an intersection, check if there are other cars in the radius of the intersection (relatively to the car)
     public boolean checkCarsInIntersection(int x, int y, int carId, int carX, int carY, int radius){
         // moving right
+        System.out.printf("[Car %d] moving (%d,%d) => (%d,%d)\n", carId, carX, carY, x, y);
         if(x > carX){
+            System.out.printf("[Car %d] moving right\n", carId);
             // check tiles of interseciton + radius
             for(int i=0; i < radius + 1; i++){
                 // check left (x stays the same)
@@ -122,6 +125,7 @@ public class GlobalState {
             }
         // moving left
         }else if(x < carX){
+            System.out.printf("[Car %d] moving left\n", carId);
             // check tiles of interseciton + radius
             for(int i=0; i < radius + 1; i++){
                 // check left (y stays the same)
@@ -136,7 +140,8 @@ public class GlobalState {
                 }
             }
         // moving up
-        }else if(y > carY){
+        }else if(y < carY){
+            System.out.printf("[Car %d] moving up\n", carId);
             // check tiles of interseciton + radius
             for(int i=0; i < radius + 1; i++){
                 // check left (y stays the same)
@@ -146,12 +151,22 @@ public class GlobalState {
                 // check forward (not if greedy)
                 boolean checkForward = (radius >= 2 && grid[y+1+i][x-1].getCarId() != 0);
 
+                if(checkRight){
+                    System.out.printf("[Car %d]: detected car to the right\n", carId);
+                }else if(checkLeft){
+                    System.out.printf("[Car %d]: detected car to the left\n", carId);
+                }else if(checkForward){
+                    System.out.printf("[Car %d]: detected car forward\n", carId);
+                }
+
+
                 if(checkLeft || checkRight || checkForward){
                     return true;
                 }
             }
         // moving down
-        }else if(y < carY){
+        }else if(y > carY){
+            System.out.printf("[Car %d] moving down\n", carId);
             // check tiles of interseciton + radius
             for(int i=0; i < radius + 1; i++){
                 // check left (y stays the same)

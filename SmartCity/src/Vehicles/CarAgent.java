@@ -77,10 +77,12 @@ public class CarAgent extends Agent {
 
             // FIXME: car that stops for priority stays waiting
             // TODO: what if both cars have priority (or both don't)?
-            if(hasPriority || !globalState.checkCarsInIntersection(x, y, location[0], location[1], id, lookahead)){
+            System.out.printf("Prio: %b - Car Detected\n", hasPriority, globalState.checkCarsInIntersection(x, y, id, location[0], location[1], lookahead));
+            if(hasPriority || !globalState.checkCarsInIntersection(x, y, id, location[0], location[1], lookahead)){
                 return false;
             }
 
+//            System.out.printf("[Car %d]: waiting for priority\n", id);
             return true;
         }
 
@@ -127,7 +129,8 @@ public class CarAgent extends Agent {
                 return;
             }
             pathIdx++;
-            myAgent.doWait(1000);
+//            myAgent.doWait(1000);
+            myAgent.doWait(3000);
         }
 
         @Override
