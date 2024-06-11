@@ -117,7 +117,7 @@ public class GlobalState {
                 // check right (x + 1)
                 boolean checkRight = (grid[y+i][x+1].getCarId() != 0);
                 // check forward (not if greedy)
-                boolean checkForward = (radius >= 2 && grid[y-1][x-1+1+i].getCarId() != 0);
+                boolean checkForward = (radius >= 2 && grid[y-1][x+1+i].getCarId() != 0);
 
                 if(checkLeft || checkRight || checkForward){
                     return true;
@@ -147,9 +147,9 @@ public class GlobalState {
                 // check left (y stays the same)
                 boolean checkLeft = (grid[y][x-i].getCarId() != 0);
                 // check right (y + 1)
-                boolean checkRight = (grid[y+1][x+i].getCarId() != 0);
+                boolean checkRight = (grid[y-1][x+i].getCarId() != 0);
                 // check forward (not if greedy)
-                boolean checkForward = (radius >= 2 && grid[y+1+i][x-1].getCarId() != 0);
+                boolean checkForward = (radius >= 2 && grid[y-1-i][x-1].getCarId() != 0);
 
                 if(checkRight){
                     System.out.printf("[Car %d]: detected car to the right\n", carId);
@@ -158,7 +158,6 @@ public class GlobalState {
                 }else if(checkForward){
                     System.out.printf("[Car %d]: detected car forward\n", carId);
                 }
-
 
                 if(checkLeft || checkRight || checkForward){
                     return true;
@@ -172,9 +171,9 @@ public class GlobalState {
                 // check left (y stays the same)
                 boolean checkLeft = (grid[y][x+i].getCarId() != 0);
                 // check right (y + 1)
-                boolean checkRight = (grid[y-1][x-i].getCarId() != 0);
+                boolean checkRight = (grid[y+1][x-i].getCarId() != 0);
                 // check forward (not if greedy)
-                boolean checkForward = (radius >= 2 && grid[y-1-i][x+1].getCarId() != 0);
+                boolean checkForward = (radius >= 2 && grid[y+1+i][x+1].getCarId() != 0);
 
                 if(checkLeft || checkRight || checkForward){
                     return true;

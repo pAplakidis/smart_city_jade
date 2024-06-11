@@ -15,7 +15,7 @@ public class CarAgent extends Agent {
     private int id;
     private GlobalState globalState;
     private boolean crashed = false;
-    private int lookahead = 1;  // 0: naive, 1: greedy, 2: cooperative
+    private int lookahead = 2;  // 0: naive, 1: greedy, 2: cooperative
 
     public boolean getCrashed(){
         return crashed;
@@ -75,7 +75,6 @@ public class CarAgent extends Agent {
                 return false;
             }
 
-            // FIXME: car that stops for priority stays waiting
             // TODO: what if both cars have priority (or both don't)?
             System.out.printf("Prio: %b - Car Detected\n", hasPriority, globalState.checkCarsInIntersection(x, y, id, location[0], location[1], lookahead));
             if(hasPriority || !globalState.checkCarsInIntersection(x, y, id, location[0], location[1], lookahead)){
@@ -129,8 +128,8 @@ public class CarAgent extends Agent {
                 return;
             }
             pathIdx++;
-//            myAgent.doWait(1000);
-            myAgent.doWait(3000);
+            myAgent.doWait(1000);
+//            myAgent.doWait(3000);
         }
 
         @Override
