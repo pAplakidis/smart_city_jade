@@ -3,6 +3,7 @@ package State;
 import Tiles.Tile;
 import Tiles.RoadTile;
 
+import javax.swing.*;
 import java.util.*;
 
 public class Navigator {
@@ -35,6 +36,17 @@ public class Navigator {
         }
     }
 
+    public RoadTile getRandomRoadTile() {
+        Random rand = new Random();
+        int x = rand.nextInt(grid.length);
+        int y = rand.nextInt(grid[0].length);
+        while (!(grid[x][y] instanceof RoadTile) && grid[x][y].getValue() != -1) {
+            x = rand.nextInt(grid.length);
+            y = rand.nextInt(grid[0].length);
+        }
+        return (RoadTile) grid[x][y];
+    }
+
     public List<Tile> findPath(RoadTile start, RoadTile end) {
         PriorityQueue<Node> openSet = new PriorityQueue<>();
         Set<Tile> closedSet = new HashSet<>();
@@ -48,7 +60,8 @@ public class Navigator {
                 return reconstructPath(current);
             }
 
-            closedSet.add(current.tile);
+            if (current.tile.getValue() != -1)
+                closedSet.add(current.tile);
 
             for (Tile neighbor : getNeighbors(current)) {
                 if (closedSet.contains(neighbor)) {
@@ -179,6 +192,8 @@ public class Navigator {
     public static void main(String[] args) {
         // Example usage:
         Tile[][] grid = GridLoader.loadGridFromFile("grid_world.txt");
+
+        assert grid != null;
 
         Navigator navigator = new Navigator(grid);
         RoadTile start = (RoadTile) grid[2][0];

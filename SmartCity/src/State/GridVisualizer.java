@@ -1,5 +1,6 @@
 package State;
 
+import Tiles.BuildingTile;
 import Tiles.RoadTile;
 import Tiles.Tile;
 
@@ -39,6 +40,7 @@ public class GridVisualizer extends JPanel {
 
                 // TODO: color based on car type
                 if (carValue != 0) {
+//                    System.out.println("Car value: " + carValue);
                     g.setColor(Color.darkGray);
                 } else {
                     switch (cellValue) {
@@ -55,7 +57,11 @@ public class GridVisualizer extends JPanel {
                             g.setColor(Color.BLACK);
                             break; // Roads
                         case 1:
-                            g.setColor(Color.LIGHT_GRAY);
+                            if (((BuildingTile) grid[y][x]).isOnFire()) {
+                                g.setColor(Color.RED);
+                            } else {
+                                g.setColor(Color.LIGHT_GRAY);
+                            }
                             break; // General Buildings
                         case 2:
                             g.setColor(Color.WHITE);
@@ -92,6 +98,13 @@ public class GridVisualizer extends JPanel {
                         case -3:
                             text = "L";
                             break;
+                        case 1:
+                            if (((BuildingTile) grid[y][x]).isOnFire()) {
+                                text = "\uD83D\uDD25";
+                            } else {
+                                text = "";
+                            }
+                            break;
                         case 2:
                             text = "H";
                             break;
@@ -112,23 +125,23 @@ public class GridVisualizer extends JPanel {
         }
 
         // Draw the path with a gradient from green to dark green and numbers
-//        if (path != null && !path.isEmpty()) {
-//            for (int i = 0; i < path.size(); i++) {
-//                Tile tile = path.get(i);
-//                int x = tile.getX();
-//                int y = tile.getY();
-//                if(grid[x][y].getCarId() != 0){
-//                    continue;
-//                }
-//
-//                float ratio = (float) i / path.size();
-//                Color color = blendColors(Color.GREEN, new Color(0, 100, 0), ratio);
-//                g.setColor(color);
-//                g.fillRect(y * cellSize, x * cellSize, cellSize, cellSize);
-//                g.setColor(Color.BLACK);
-//                g.drawString(String.valueOf(i + 1), y * cellSize + cellSize / 2 - 4, x * cellSize + cellSize / 2 + 4); // Draw the order number
-//            }
-//        }
+        if (path != null && !path.isEmpty()) {
+            for (int i = 0; i < path.size(); i++) {
+                Tile tile = path.get(i);
+                int x = tile.getX();
+                int y = tile.getY();
+                if(grid[x][y].getCarId() != 0){
+                    continue;
+                }
+
+                float ratio = (float) i / path.size();
+                Color color = blendColors(Color.GREEN, new Color(0, 100, 0), ratio);
+                g.setColor(color);
+                g.fillRect(y * cellSize, x * cellSize, cellSize, cellSize);
+                g.setColor(Color.BLACK);
+                g.drawString(String.valueOf(i + 1), y * cellSize + cellSize / 2 - 4, x * cellSize + cellSize / 2 + 4); // Draw the order number
+            }
+        }
 
         // Draw axis labels
         g.setColor(Color.BLACK);
@@ -185,6 +198,10 @@ public class GridVisualizer extends JPanel {
             System.out.println();
         }
 
+        // Set a random tile on fire
+        ((BuildingTile) grid[5][5]).setOnFire(true);
+
+
         JFrame frame = new JFrame("Grid World Visualizer");
         GridVisualizer visualizer = new GridVisualizer(grid);
         frame.add(visualizer);
@@ -197,8 +214,9 @@ public class GridVisualizer extends JPanel {
         Navigator navigator = new Navigator(grid);
 
         assert grid != null;
-        RoadTile start = (RoadTile) grid[2][0];
-        RoadTile end = (RoadTile) grid[13][23];
+//        Moving from 0 2 to 14 25
+        RoadTile start = (RoadTile) grid[4][0];
+        RoadTile end = (RoadTile) grid[3][1];
 
         List<Tile> path = navigator.findPath(start, end);
         visualizer.setPath(path);
