@@ -76,7 +76,7 @@ public class CarAgent extends Agent {
             }
 
             // TODO: what if both cars have priority (or both don't)?
-            System.out.printf("Prio: %b - Car Detected\n", hasPriority, globalState.checkCarsInIntersection(x, y, id, location[0], location[1], lookahead));
+//            System.out.printf("Prio: %b - Car Detected\n", hasPriority, globalState.checkCarsInIntersection(x, y, id, location[0], location[1], lookahead));
             if(hasPriority || !globalState.checkCarsInIntersection(x, y, id, location[0], location[1], lookahead)){
                 return false;
             }
@@ -87,54 +87,67 @@ public class CarAgent extends Agent {
 
         @Override
         public void action() {
-            int x = location[0];
-            int y = location[1];
+            if(!navDone){
+                // Follow path from Navigator
+                int x = location[0];
+                int y = location[1];
 
-            if (pathIdx > path.size()) {
-                navDone = true;
-                return;
-            }
-
-            // TODO: cleanup => sub-behaviours can be functions
-            // TODO: move this behaviour to a function and call it recursively if reached path, with random point
-            // NOTE: here x and y are columns and rows correspondingly (i.e. they are inverted)
-            boolean hasPriority = ((RoadTile)globalState.getGrid()[y][x]).hasPriority();
-            int xPath = path.get(pathIdx).getY();
-            int yPath = path.get(pathIdx).getX();
-
-            // either wait or continue if near intersection and not on it
-            if(grid[location[0]][location[1]].getValue() != -1 &&
-                    hasToStopAtIntersection(xPath, yPath, hasPriority)){
-                return;
-            }
-
-            int moveState = globalState.moveCar(x, y, xPath, yPath, myCarAgent);
-            switch(moveState){
-                case 1:
-                    location[0] = xPath;
-                    location[1] = yPath;
-                    break;
-                case 2:
-                    crashed = true;
-                    System.out.printf("[Car%d] crashed!\n", myCarAgent.getId());
+//                System.out.printf("%d/%d\n", pathIdx, path.size());
+                if (pathIdx >= path.size()) {
+                    navDone = true;
                     return;
-                default:
-                    break;
-            }
+                }
 
-            // check if done
-            if(location[0] == newX && location[1] == newY){
-                navDone = true;
-                return;
+                // NOTE: here x and y are columns and rows correspondingly (i.e. they are inverted)
+                boolean hasPriority = ((RoadTile)globalState.getGrid()[y][x]).hasPriority();
+                int xPath = path.get(pathIdx).getY();
+                int yPath = path.get(pathIdx).getX();
+
+                // either wait or continue if near intersection and not on it
+                if(grid[location[0]][location[1]].getValue() != -1 &&
+                        hasToStopAtIntersection(xPath, yPath, hasPriority)){
+                    return;
+                }
+
+                int moveState = globalState.moveCar(x, y, xPath, yPath, myCarAgent);
+                switch(moveState){
+                    case 1:
+                        location[0] = xPath;
+                        location[1] = yPath;
+                        break;
+                    case 2:
+                        // FIXME: can crash with self
+                        crashed = true;
+                        System.out.printf("[Car%d] crashed!\n", myCarAgent.getId());
+                        return;
+                    default:
+                        break;
+                }
+
+                // check if done
+                if(location[0] == newX && location[1] == newY){
+                    navDone = true;
+                    return;
+                }
+
+                pathIdx++;
+                myAgent.doWait(1000);
+    //            myAgent.doWait(3000);
+
+            }else{
+                // Get new path from Navigator
+                RoadTile start = (RoadTile) globalState.getGrid()[location[1]][location[0]];
+                RoadTile end = navigator.getRandomRoadTile();
+//                System.out.printf("New destination: %d,%d\n", end.getX(), end.getY());
+                pathIdx = 1;
+                path = navigator.findPath(start, end);
+                navDone = false;
             }
-            pathIdx++;
-            myAgent.doWait(1000);
-//            myAgent.doWait(3000);
         }
 
         @Override
         public boolean done() {
-            return navDone || crashed;
+            return crashed;
         }
     }
 
@@ -147,7 +160,7 @@ public class CarAgent extends Agent {
             location[0] = Integer.parseInt(args[1].toString());
             location[1] = Integer.parseInt(args[2].toString());
         }
-        System.out.println("[Vehicles.CarAgent] Accessed Grid with id: " + id);
+//        System.out.println("[Vehicles.CarAgent] Accessed Grid with id: " + id);
 
         globalState.setCarLocation(location[0], location[1], this);
 //        addBehaviour(new RoamBehaviour(this, this, 8, 6));    // test scenario 1

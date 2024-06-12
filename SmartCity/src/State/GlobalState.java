@@ -152,9 +152,13 @@ public class GlobalState {
         }
     }
 
-    // FIXME: bug for Y (checking above is y-n not y+n, unlike x)
+    // FIXME: what if left, right or forward is out of bounds?
     // given an intersection, check if there are other cars in the radius of the intersection (relatively to the car)
     public boolean checkCarsInIntersection(int x, int y, int carId, int carX, int carY, int radius) {
+        boolean checkLeft = false;
+        boolean checkRight = false;
+        boolean checkForward = false;
+
         // moving right
 //        System.out.printf("[Car %d] moving (%d,%d) => (%d,%d)\n", carId, carX, carY, x, y);
         if (x > carX) {
@@ -162,11 +166,19 @@ public class GlobalState {
             // check tiles of interseciton + radius
             for (int i = 0; i < radius + 1; i++) {
                 // check left (x stays the same)
-                boolean checkLeft = (grid[y - i][x].getCarId() != 0);
+                if(!(y-i < 0)){
+                    checkLeft = (grid[y - i][x].getCarId() != 0);
+                }
+
                 // check right (x + 1)
-                boolean checkRight = (grid[y + i][x + 1].getCarId() != 0);
+                if(!(y+i >= grid.length || x+1 >= grid[y].length)){
+                    checkRight = (grid[y + i][x + 1].getCarId() != 0);
+                }
+
                 // check forward (not if greedy)
-                boolean checkForward = (radius >= 2 && grid[y - 1][x + 1 + i].getCarId() != 0);
+                if(!(y - 1 < 0 || x + 1 + i >= grid[y-i].length)) {
+                    checkForward = (radius >= 2 && grid[y - 1][x + 1 + i].getCarId() != 0);
+                }
 
                 if (checkLeft || checkRight || checkForward) {
                     return true;
@@ -178,11 +190,19 @@ public class GlobalState {
             // check tiles of interseciton + radius
             for (int i = 0; i < radius + 1; i++) {
                 // check left (y stays the same)
-                boolean checkLeft = (grid[y + i][x].getCarId() != 0);
+                if(!(y+i >= grid.length)) {
+                    checkLeft = (grid[y + i][x].getCarId() != 0);
+                }
+
                 // check right (y + 1)
-                boolean checkRight = (grid[y - i][x - 1].getCarId() != 0);
+                if(!(y-i < 0 || x - 1 < 0)) {
+                    checkRight = (grid[y - i][x - 1].getCarId() != 0);
+                }
+
                 // check forward (not if greedy)
-                boolean checkForward = (radius >= 2 && grid[y + 1][x - 1 - i].getCarId() != 0);
+                if(!(y+i >= grid.length || x - 1 - i <  0)) {
+                    checkForward = (radius >= 2 && grid[y + 1][x - 1 - i].getCarId() != 0);
+                }
 
                 if (checkLeft || checkRight || checkForward) {
                     return true;
@@ -194,11 +214,19 @@ public class GlobalState {
             // check tiles of interseciton + radius
             for (int i = 0; i < radius + 1; i++) {
                 // check left (y stays the same)
-                boolean checkLeft = (grid[y][x - i].getCarId() != 0);
+                if(!(x-i < 0)) {
+                    checkLeft = (grid[y][x - i].getCarId() != 0);
+                }
+
                 // check right (y + 1)
-                boolean checkRight = (grid[y - 1][x + i].getCarId() != 0);
+                if(!(y-1 < 0 || x+1 >= grid[y].length)) {
+                    checkRight = (grid[y - 1][x + i].getCarId() != 0);
+                }
+
                 // check forward (not if greedy)
-                boolean checkForward = (radius >= 2 && grid[y - 1 - i][x - 1].getCarId() != 0);
+                if(!(y - 1 - i < 0 || x-1 < 0)) {
+                    checkForward = (radius >= 2 && grid[y - 1 - i][x - 1].getCarId() != 0);
+                }
 
 //                if(checkRight){
 //                    System.out.printf("[Car %d]: detected car to the right\n", carId);
@@ -218,11 +246,19 @@ public class GlobalState {
             // check tiles of interseciton + radius
             for (int i = 0; i < radius + 1; i++) {
                 // check left (y stays the same)
-                boolean checkLeft = (grid[y][x + i].getCarId() != 0);
+                if(!(x+i >= grid[y].length)) {
+                    checkLeft = (grid[y][x + i].getCarId() != 0);
+                }
+
                 // check right (y + 1)
-                boolean checkRight = (grid[y + 1][x - i].getCarId() != 0);
+                if(!(y+i >= grid.length || x-i < 0)) {
+                    checkRight = (grid[y + 1][x - i].getCarId() != 0);
+                }
+
                 // check forward (not if greedy)
-                boolean checkForward = (radius >= 2 && grid[y + 1 + i][x + 1].getCarId() != 0);
+                if(!(y + 1 + i >= grid.length || x + 1 >= grid[y].length)) {
+                    checkForward = (radius >= 2 && grid[y + 1 + i][x + 1].getCarId() != 0);
+                }
 
                 if (checkLeft || checkRight || checkForward) {
                     return true;
