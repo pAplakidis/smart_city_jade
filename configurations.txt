@@ -1,0 +1,28 @@
+always used:
+-gui
+-name
+smart-city
+
+
+(x: columns - y: rows)
+
+scenario 1
+car1 moving right + priority
+car2 moving up
+intersection
+
+-agents
+Car1:Vehicles.CarAgent(5,2,6);Car2:Vehicles.CarAgent(6,6,9)
+
+destination (8, 6)
+
+scenario 2
+car1 moving left + priority
+car2 moving down
+intersection
+
+-agents
+Car1:Vehicles.CarAgent(5,5,2);Car2:Vehicles.CarAgent(6,9,5)
+
+destination (3, 5)
+

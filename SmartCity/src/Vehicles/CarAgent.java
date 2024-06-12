@@ -150,7 +150,8 @@ public class CarAgent extends Agent {
         System.out.println("[Vehicles.CarAgent] Accessed Grid with id: " + id);
 
         globalState.setCarLocation(location[0], location[1], this);
-        addBehaviour(new RoamBehaviour(this, this, 8, 6));
+//        addBehaviour(new RoamBehaviour(this, this, 8, 6));    // test scenario 1
+        addBehaviour(new RoamBehaviour(this, this, 3, 5));  // test scenario 2
     }
 }
 

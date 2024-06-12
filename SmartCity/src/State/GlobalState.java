@@ -61,7 +61,8 @@ public class GlobalState {
             grid[y][x].setAgent(agent);
             status = 1;
         }else{
-            // TODO: stop car we crashed into as well
+            // TODO: (test) stop car we crashed into as well
+            // TODO: randomly either stop and wait for car in front or crash on it
             // get the agent of that location and set a boolean for it to stop
             System.out.printf("[GlobalState] Crash detected: Car%d[%d,%d] - Car%d[%d,%d]\n", agent.getId(), oldY, oldX, possibleCrashId, y, x);
             possibleCrashAgent.setCrashed(true);
@@ -107,9 +108,9 @@ public class GlobalState {
     // given an intersection, check if there are other cars in the radius of the intersection (relatively to the car)
     public boolean checkCarsInIntersection(int x, int y, int carId, int carX, int carY, int radius){
         // moving right
-        System.out.printf("[Car %d] moving (%d,%d) => (%d,%d)\n", carId, carX, carY, x, y);
+//        System.out.printf("[Car %d] moving (%d,%d) => (%d,%d)\n", carId, carX, carY, x, y);
         if(x > carX){
-            System.out.printf("[Car %d] moving right\n", carId);
+//            System.out.printf("[Car %d] moving right\n", carId);
             // check tiles of interseciton + radius
             for(int i=0; i < radius + 1; i++){
                 // check left (x stays the same)
@@ -125,7 +126,7 @@ public class GlobalState {
             }
         // moving left
         }else if(x < carX){
-            System.out.printf("[Car %d] moving left\n", carId);
+//            System.out.printf("[Car %d] moving left\n", carId);
             // check tiles of interseciton + radius
             for(int i=0; i < radius + 1; i++){
                 // check left (y stays the same)
@@ -141,7 +142,7 @@ public class GlobalState {
             }
         // moving up
         }else if(y < carY){
-            System.out.printf("[Car %d] moving up\n", carId);
+//            System.out.printf("[Car %d] moving up\n", carId);
             // check tiles of interseciton + radius
             for(int i=0; i < radius + 1; i++){
                 // check left (y stays the same)
@@ -151,13 +152,13 @@ public class GlobalState {
                 // check forward (not if greedy)
                 boolean checkForward = (radius >= 2 && grid[y-1-i][x-1].getCarId() != 0);
 
-                if(checkRight){
-                    System.out.printf("[Car %d]: detected car to the right\n", carId);
-                }else if(checkLeft){
-                    System.out.printf("[Car %d]: detected car to the left\n", carId);
-                }else if(checkForward){
-                    System.out.printf("[Car %d]: detected car forward\n", carId);
-                }
+//                if(checkRight){
+//                    System.out.printf("[Car %d]: detected car to the right\n", carId);
+//                }else if(checkLeft){
+//                    System.out.printf("[Car %d]: detected car to the left\n", carId);
+//                }else if(checkForward){
+//                    System.out.printf("[Car %d]: detected car forward\n", carId);
+//                }
 
                 if(checkLeft || checkRight || checkForward){
                     return true;
@@ -165,7 +166,7 @@ public class GlobalState {
             }
         // moving down
         }else if(y > carY){
-            System.out.printf("[Car %d] moving down\n", carId);
+//            System.out.printf("[Car %d] moving down\n", carId);
             // check tiles of interseciton + radius
             for(int i=0; i < radius + 1; i++){
                 // check left (y stays the same)
