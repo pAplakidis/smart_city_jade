@@ -37,3 +37,8 @@ Car1:Vehicles.CarAgent(5,5,2);Car2:Vehicles.CarAgent(6,9,5);Car3:Vehicles.CarAge
 
 destination (3, 5)
 
+scenario 4
+special cars
+
+-gui -name the-platform -agents ""Building:Buildings.BuildingAgent;FireDept:Buildings.FireDepartmentAgent;FireTruck1:Vehicles.FiretruckAgent(199,0,2);FireTruck2:Vehicles.FiretruckAgent(199,13,14);Car1:Vehicles.CarAgent(5,6,2);Car2:Vehicles.CarAgent(6,11,6);Hosp:Buildings.HospitalAgent;Ambu1:Vehicles.AmbulanceAgent;Ambu2:Vehicles.AmbulanceAgent(180,0,20)"
+
