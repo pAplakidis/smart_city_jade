@@ -157,11 +157,18 @@ public class GlobalState {
             status = 1;
         } else {
             // TODO: (test) stop car we crashed into as well
-            // TODO: randomly either stop and wait for car in front or crash on it
             // get the agent of that location and set a boolean for it to stop
-            System.out.printf("[GlobalState] Crash detected: Car%d[%d,%d] - Car%d[%d,%d]\n", agent.getId(), oldY, oldX, possibleCrashId, y, x);
-            possibleCrashAgent.setCrashed(true);
-            status = 2;
+            Random rand = new Random();
+            double prob = 0.05;
+            double randVal = rand.nextDouble();
+
+            if(randVal < prob){
+                System.out.printf("[GlobalState] Crash detected: Car%d[%d,%d] - Car%d[%d,%d]\n", agent.getId(), oldY, oldX, possibleCrashId, y, x);
+                possibleCrashAgent.setCrashed(true);
+                status = 2;
+            }else{
+                status = 3;
+            }
         }
 
         updateGridDisplay();

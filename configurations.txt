@@ -26,3 +26,14 @@ Car1:Vehicles.CarAgent(5,5,2);Car2:Vehicles.CarAgent(6,9,5)
 
 destination (3, 5)
 
+scenario 3
+car1 moving left + priority
+car2 moving down
+car 3 moving behind car1
+intersection
+
+-agents
+Car1:Vehicles.CarAgent(5,5,2);Car2:Vehicles.CarAgent(6,9,5);Car3:Vehicles.CarAgent(7,5,1)
+
+destination (3, 5)
+

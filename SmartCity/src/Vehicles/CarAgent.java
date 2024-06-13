@@ -130,6 +130,8 @@ public class CarAgent extends Agent {
                         setCrashed(true);
                         System.out.printf("[Car%d] crashed!\n", myCarAgent.getId());
                         return;
+                    case 3:
+                        break;
                     default:
                         break;
                 }
