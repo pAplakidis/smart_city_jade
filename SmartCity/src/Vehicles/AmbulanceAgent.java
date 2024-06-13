@@ -125,7 +125,7 @@ public class AmbulanceAgent extends CarAgent {
 
         path = path.subList(1, path.size());
         // show path after the index 1
-        globalState.updatePathDisplay(path.subList(1, path.size()));
+//        globalState.updatePathDisplay(path.subList(1, path.size()));
     }
 
     private void moveToCrush() {
@@ -154,7 +154,7 @@ public class AmbulanceAgent extends CarAgent {
         path = path.subList(1, path.size());
 
         // show path after the index 1
-        globalState.updatePathDisplay(path.subList(1, path.size()));
+//        globalState.updatePathDisplay(path.subList(1, path.size()));
     }
 
     private void loadingInjured() {
@@ -165,7 +165,7 @@ public class AmbulanceAgent extends CarAgent {
         if (loadingProgress <= 0) {
             System.out.println("[" + this.getLocalName() + "] Injured loaded, returning to fire station");
             loadingProgress = 100;
-//            roadTile.getAgent().randomSpawn();
+            roadTile.getAgent().doDelete();
             roadTile.setAgent(null);
             nextLocation = null;
             currentState = State.RETURNING_TO_HOSPITAL;
@@ -204,7 +204,7 @@ public class AmbulanceAgent extends CarAgent {
         path = path.subList(1, path.size());
 
         // show path after the index 1
-        globalState.updatePathDisplay(path.subList(1, path.size()));
+//        globalState.updatePathDisplay(path.subList(1, path.size()));
     }
 
     private int getDistanceToCrush(String locationString) {

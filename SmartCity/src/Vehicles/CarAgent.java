@@ -13,7 +13,7 @@ import javax.xml.xpath.XPath;
 import java.util.List;
 
 public class CarAgent extends Agent {
-    private int[] location = new int[]{2, 0};   // TODO: make this random
+    private int[] location = new int[]{-1, -1}; // -1, -1 will randomly spawn the car
     private int id = 1;
     private GlobalState globalState;
     private boolean crashed = false;
@@ -54,7 +54,7 @@ public class CarAgent extends Agent {
         // TODO: pick random point (check if valid)
         public RoamBehaviour(Agent a, CarAgent agent, int newX, int newY) {
             super(a);
-            System.out.println("[agent] " + myAgent.getAID().getLocalName());
+            System.out.println("[" + getLocalName() + "] " + myAgent.getAID().getLocalName() + " spawned at (" + location[1] + ", " + location[0] + ")");
             // init variables
             this.globalState = GlobalState.getInstance();
             this.myCarAgent = agent;
@@ -70,7 +70,7 @@ public class CarAgent extends Agent {
             RoadTile end = (RoadTile) grid[newY][newX];
             path = navigator.findPath(start, end);
             pathIdx = 1;
-            globalState.updatePathDisplay(path);
+//            globalState.updatePathDisplay(path);
         }
 
         private boolean hasToStopAtIntersection(int y, int x, boolean hasPriority) {
@@ -122,6 +122,12 @@ public class CarAgent extends Agent {
                     case 1:
                         location[0] = xPath;
                         location[1] = yPath;
+                        // random crash chance (2%)
+                        if (Math.random() < 0.02){
+                            setCrashed(true);
+                            System.out.printf("[Car%d] crashed!\n", myCarAgent.getId());
+                            return;
+                        }
                         break;
                     case 2:
                         myAgent.doWait(2000);
@@ -142,7 +148,7 @@ public class CarAgent extends Agent {
                 pathIdx++;
                 myAgent.doWait(1000);
 //            myAgent.doWait(3000);
-            }else{
+            } else{
                 // Get new path from Navigator
                 RoadTile start = (RoadTile) globalState.getGrid()[location[1]][location[0]];
                 RoadTile end = navigator.getRandomRoadTile();
@@ -164,8 +170,8 @@ public class CarAgent extends Agent {
         RoadTile loc = navigator.getRandomRoadTile();
         location[0] = loc.getX();
         location[1] = loc.getY();
-        loc.setAgent(this);
-        this.setCrashed(false);
+//        loc.setAgent(this);
+//        this.setCrashed(false);
         respawned = true;
     }
 
@@ -180,6 +186,10 @@ public class CarAgent extends Agent {
             location[0] = Integer.parseInt(args[1].toString());
             location[1] = Integer.parseInt(args[2].toString());
             lookahead = Integer.parseInt(args[3].toString());
+        }
+        if (location[0] == -1 || location[1] == -1) {
+            RoadTile rndTile = navigator.getRandomRoadTile();
+            location = new int[]{rndTile.getX(), rndTile.getY()};
         }
 //        System.out.println("[Vehicles.CarAgent] Accessed Grid with id: " + id);
 

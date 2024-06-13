@@ -40,7 +40,7 @@ public class Navigator {
         Random rand = new Random();
         int x = rand.nextInt(grid.length);
         int y = rand.nextInt(grid[0].length);
-        while (!(grid[x][y] instanceof RoadTile) && grid[x][y].getValue() != -1) {
+        while (!(grid[x][y] instanceof RoadTile) && grid[x][y].getValue() != -1 && grid[x][y].getAgent() == null) {
             x = rand.nextInt(grid.length);
             y = rand.nextInt(grid[0].length);
         }

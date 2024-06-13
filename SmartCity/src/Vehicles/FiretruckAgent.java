@@ -125,7 +125,7 @@ public class FiretruckAgent extends CarAgent {
 
         path = path.subList(1, path.size());
         // show path after the index 1
-        globalState.updatePathDisplay(path.subList(1, path.size()));
+//        globalState.updatePathDisplay(path.subList(1, path.size()));
     }
 
     private void moveToFire() {
@@ -153,7 +153,7 @@ public class FiretruckAgent extends CarAgent {
         path = path.subList(1, path.size());
 
         // show path after the index 1
-        globalState.updatePathDisplay(path.subList(1, path.size()));
+//        globalState.updatePathDisplay(path.subList(1, path.size()));
     }
 
     private void extinguishFire() {
@@ -202,7 +202,7 @@ public class FiretruckAgent extends CarAgent {
         path = path.subList(1, path.size());
 
         // show path after the index 1
-        globalState.updatePathDisplay(path.subList(1, path.size()));
+//        globalState.updatePathDisplay(path.subList(1, path.size()));
     }
 
     private int getDistanceToFire(String locationString) {

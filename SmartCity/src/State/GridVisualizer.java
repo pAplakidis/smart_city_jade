@@ -94,15 +94,15 @@ public class GridVisualizer extends JPanel {
                 String text;
                 if (carValue != 0) {
                     if (carValue >= 166 && carValue < 199)
-//                        text = "\uD83D\uDE91";
-                        text = "A";
+                        text = "\uD83D\uDE91";
+//                        text = "A";
                     else if (carValue >= 199) {
                         text = "\uD83D\uDE92";
-                        text = "F";
+//                        text = "F";
                     } else
 //                        text = Integer.toString(carValue);
-//                        text = "\uD83D\uDE97";
-                        text = "C";
+                        text = "\uD83D\uDE97";
+//                        text = "C";
                 } else {
                     switch (cellValue) {
                         case -1:
