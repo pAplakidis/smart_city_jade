@@ -7,19 +7,19 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+
 import State.GlobalState;
 import State.Navigator;
 
-import javax.swing.*;
 import java.util.List;
 
-public class FiretruckAgent extends CarAgent {
-    private int id = 1;
-    private int[] location = new int[]{2, 0};
-    private int[] fireLocation = new int[]{0, 0};
-    private int[] stationLocation = new int[]{10, 8};
-    private boolean isAddressingFire = false;
-    private int firePercentage = 100;
+public class AmbulanceAgent extends CarAgent {
+    private int id = 166;
+    private int[] location = new int[]{24, 15};
+    private int[] crushLocation = new int[]{0, 0};
+    private int[] stationLocation = new int[]{22, 8};
+    private int loadingProgress = 100;
+    private boolean isAddressingCrush = false;
     private List<Tile> path = null;
     private GlobalState globalState;
     private Navigator navigator;
@@ -28,9 +28,9 @@ public class FiretruckAgent extends CarAgent {
 
     private enum State {
         ROAMING,
-        MOVING_TO_FIRE,
-        EXTINGUISHING_FIRE,
-        RETURNING_TO_STATION
+        MOVING_TO_CRUSH,
+        LOADING_INJURED,
+        RETURNING_TO_HOSPITAL
     }
 
     private State currentState = State.ROAMING;
@@ -62,22 +62,22 @@ public class FiretruckAgent extends CarAgent {
                 if (msg != null && msg.getContent().startsWith("Request distance for")) {
                     ACLMessage reply = msg.createReply();
                     reply.setPerformative(ACLMessage.PROPOSE);
-                    if (isAddressingFire) {
+                    if (isAddressingCrush) {
                         reply.setContent("9999");
                         send(reply);
                     } else {
                         System.out.println("[" + getLocalName() + "] Received and Answering distance request from " + msg.getSender().getLocalName() + ": " + msg.getContent());
                         String locationString = msg.getContent().substring(30);
-                        reply.setContent(String.valueOf(getDistanceToFire(locationString)));
+                        reply.setContent(String.valueOf(getDistanceToCrush(locationString)));
                         send(reply);
                     }
                 } else {
                     msg = myAgent.receive(mtAssign);
                     if (msg != null) {
-                        System.out.println("[" + getLocalName() + "] Addressing fire at location " + fireLocation[0] + ", " + fireLocation[1]);
-                        isAddressingFire = true;
+                        System.out.println("[" + getLocalName() + "] Addressing crush at location " + crushLocation[0] + ", " + crushLocation[1]);
+                        isAddressingCrush = true;
                         nextLocation = null;
-                        currentState = State.MOVING_TO_FIRE;
+                        currentState = AmbulanceAgent.State.MOVING_TO_CRUSH;
                     } else {
                         block();
                     }
@@ -91,14 +91,14 @@ public class FiretruckAgent extends CarAgent {
                     case ROAMING:
                         roam();
                         break;
-                    case MOVING_TO_FIRE:
-                        moveToFire();
+                    case MOVING_TO_CRUSH:
+                        moveToCrush();
                         break;
-                    case EXTINGUISHING_FIRE:
-                        extinguishFire();
+                    case LOADING_INJURED:
+                        loadingInjured();
                         break;
-                    case RETURNING_TO_STATION:
-                        returnToStation();
+                    case RETURNING_TO_HOSPITAL:
+                        returnToHospital();
                         break;
                 }
             }
@@ -128,11 +128,12 @@ public class FiretruckAgent extends CarAgent {
         globalState.updatePathDisplay(path.subList(1, path.size()));
     }
 
-    private void moveToFire() {
+    private void moveToCrush() {
         // Logic to move to the fire location
         if (nextLocation == null) {
-            nextLocation = getRoadTile((BuildingTile) globalState.getGrid()[fireLocation[0]][fireLocation[1]]);
+            nextLocation = (RoadTile) globalState.getGrid()[crushLocation[0]][crushLocation[1]];
             path = navigator.findPath(currentLocation, nextLocation);
+            path = path.subList(0, path.size());
         }
 
 //        System.out.println("[" + this.getLocalName() + "] Moving from " + currentLocation.getX() + " " + currentLocation.getY() + " to " + nextLocation.getX() + " " + nextLocation.getY() + " with path length " + path.size());
@@ -146,8 +147,8 @@ public class FiretruckAgent extends CarAgent {
         currentLocation = (RoadTile) globalState.getGrid()[location[0]][location[1]];
 
         if (location[0] == nextLocation.getX() && location[1] == nextLocation.getY()) {
-            System.out.println("[" + this.getLocalName() + "] Arrived at fire location " + fireLocation[0] + ", " + fireLocation[1] + " starting to extinguish fire");
-            currentState = State.EXTINGUISHING_FIRE;
+            System.out.println("[" + this.getLocalName() + "] Arrived at crush location " + crushLocation[0] + ", " + crushLocation[1] + " starting to loading injured");
+            currentState = State.LOADING_INJURED;
         }
 
         path = path.subList(1, path.size());
@@ -156,21 +157,22 @@ public class FiretruckAgent extends CarAgent {
         globalState.updatePathDisplay(path.subList(1, path.size()));
     }
 
-    private void extinguishFire() {
+    private void loadingInjured() {
         // Logic to extinguish fire
-        BuildingTile fireBuilding = (BuildingTile) globalState.getGrid()[fireLocation[0]][fireLocation[1]];
-        firePercentage -= 25;
-        System.out.println("[" + this.getLocalName() + "] Extinguishing fire at " + fireLocation[0] + ", " + fireLocation[1] + " remaining fire " + firePercentage + "%");
-        if (firePercentage <= 0) {
-            fireBuilding.setOnFire(false);
-            System.out.println("[" + this.getLocalName() + "] Fire extinguished at " + fireLocation[0] + ", " + fireLocation[1]);
-            firePercentage = 100;
+        RoadTile roadTile = (RoadTile) globalState.getGrid()[crushLocation[0]][crushLocation[1]];
+        loadingProgress -= 50;
+        System.out.println("[" + this.getLocalName() + "] Loading injured at " + crushLocation[0] + ", " + crushLocation[1] + " loading progress: " + loadingProgress + "%");
+        if (loadingProgress <= 0) {
+            System.out.println("[" + this.getLocalName() + "] Injured loaded, returning to fire station");
+            loadingProgress = 100;
+            roadTile.getAgent().setCrashed(false);
+            roadTile.setAgent(null);
             nextLocation = null;
-            currentState = State.RETURNING_TO_STATION;
+            currentState = State.RETURNING_TO_HOSPITAL;
         }
     }
 
-    private void returnToStation() {
+    private void returnToHospital() {
         // Logic to return to the fire station
         if (nextLocation == null) {
             nextLocation = getRoadTile((BuildingTile) globalState.getGrid()[stationLocation[0]][stationLocation[1]]);
@@ -191,10 +193,10 @@ public class FiretruckAgent extends CarAgent {
             System.out.println("[" + this.getLocalName() + "] Arrived at fire station " + stationLocation[0] + ", " + stationLocation[1]);
             currentState = State.ROAMING;
             nextLocation = null;
-            isAddressingFire = false;
+            isAddressingCrush = false;
             System.out.println("[" + this.getLocalName() + "] Returning to roaming state");
             ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
-            inform.addReceiver(new jade.core.AID("FireDept", jade.core.AID.ISLOCALNAME));
+            inform.addReceiver(new jade.core.AID("Hosp", jade.core.AID.ISLOCALNAME));
             inform.setContent("Start Roaming");
             send(inform);
         }
@@ -205,28 +207,27 @@ public class FiretruckAgent extends CarAgent {
         globalState.updatePathDisplay(path.subList(1, path.size()));
     }
 
-    private int getDistanceToFire(String locationString) {
+    private int getDistanceToCrush(String locationString) {
         // Calculate distance based on the fire location and the truck's location
-        System.out.println("[" + this.getLocalName() + "] Calculating distance to fire at " + locationString);
-        fireLocation = new int[]{Integer.parseInt(locationString.split(", ")[0]), Integer.parseInt(locationString.split(", ")[1])};
-        System.out.println("[" + this.getLocalName() + "] Fire location: " + fireLocation[0] + ", " + fireLocation[1]);
-        BuildingTile fireBuilding = (BuildingTile) globalState.getGrid()[fireLocation[0]][fireLocation[1]];
-        RoadTile fireTruckLocation = (RoadTile) globalState.getGrid()[location[0]][location[1]];
-        RoadTile roadNextToFire = getRoadTile(fireBuilding);
-        return navigator.findPath(fireTruckLocation, roadNextToFire).size();
+        System.out.println("[" + this.getLocalName() + "] Calculating distance to crush at " + locationString);
+        crushLocation = new int[]{Integer.parseInt(locationString.split(", ")[0]), Integer.parseInt(locationString.split(", ")[1])};
+        System.out.println("[" + this.getLocalName() + "] Crush location: " + crushLocation[0] + ", " + crushLocation[1]);
+        RoadTile crushLocation = (RoadTile) globalState.getGrid()[this.crushLocation[0]][this.crushLocation[1]];
+        RoadTile ambulanceLocation = (RoadTile) globalState.getGrid()[location[0]][location[1]];
+        return navigator.findPath(ambulanceLocation, crushLocation).size();
     }
 
-    private RoadTile getRoadTile(BuildingTile fireBuilding) {
-        RoadTile roadNextToFire = null;
-        if (fireBuilding.getX() > 0 && globalState.getGrid()[fireBuilding.getX() - 1][fireBuilding.getY()] instanceof RoadTile) {
-            roadNextToFire = (RoadTile) globalState.getGrid()[fireBuilding.getX() - 1][fireBuilding.getY()];
-        } else if (fireBuilding.getX() < globalState.getGrid().length - 1 && globalState.getGrid()[fireBuilding.getX() + 1][fireBuilding.getY()] instanceof RoadTile) {
-            roadNextToFire = (RoadTile) globalState.getGrid()[fireBuilding.getX() + 1][fireBuilding.getY()];
-        } else if (fireBuilding.getY() > 0 && globalState.getGrid()[fireBuilding.getX()][fireBuilding.getY() - 1] instanceof RoadTile) {
-            roadNextToFire = (RoadTile) globalState.getGrid()[fireBuilding.getX()][fireBuilding.getY() - 1];
-        } else if (fireBuilding.getY() < globalState.getGrid()[0].length - 1 && globalState.getGrid()[fireBuilding.getX()][fireBuilding.getY() + 1] instanceof RoadTile) {
-            roadNextToFire = (RoadTile) globalState.getGrid()[fireBuilding.getX()][fireBuilding.getY() + 1];
+    private RoadTile getRoadTile(BuildingTile buildingTile) {
+        RoadTile roadNextToBuilding = null;
+        if (buildingTile.getX() > 0 && globalState.getGrid()[buildingTile.getX() - 1][buildingTile.getY()] instanceof RoadTile) {
+            roadNextToBuilding = (RoadTile) globalState.getGrid()[buildingTile.getX() - 1][buildingTile.getY()];
+        } else if (buildingTile.getX() < globalState.getGrid().length - 1 && globalState.getGrid()[buildingTile.getX() + 1][buildingTile.getY()] instanceof RoadTile) {
+            roadNextToBuilding = (RoadTile) globalState.getGrid()[buildingTile.getX() + 1][buildingTile.getY()];
+        } else if (buildingTile.getY() > 0 && globalState.getGrid()[buildingTile.getX()][buildingTile.getY() - 1] instanceof RoadTile) {
+            roadNextToBuilding = (RoadTile) globalState.getGrid()[buildingTile.getX()][buildingTile.getY() - 1];
+        } else if (buildingTile.getY() < globalState.getGrid()[0].length - 1 && globalState.getGrid()[buildingTile.getX()][buildingTile.getY() + 1] instanceof RoadTile) {
+            roadNextToBuilding = (RoadTile) globalState.getGrid()[buildingTile.getX()][buildingTile.getY() + 1];
         }
-        return roadNextToFire;
+        return roadNextToBuilding;
     }
 }

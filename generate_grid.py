@@ -7,7 +7,7 @@ from matplotlib.colors import ListedColormap
 def generate_grid(width, height):
     max_lanes = 4
     lanes = [2, 4]
-    min_block_size = 5
+    min_block_size = 6
     grid = np.ones((height, width), dtype=int)
 
     for y in range(0, height, min_block_size):
@@ -54,10 +54,9 @@ def assign_roles(grid, num_hospitals, num_police_stations, num_fire_departments)
     for y in range(grid.shape[0]):
         for x in range(grid.shape[1]):
             if grid[y, x] == 1:
-                block = flood_fill(grid, x, y, block_id)
+                block = flood_fill(grid, x, y, 5)
                 if block:
                     blocks.append(block)
-                    block_id += 1
 
     roles = [2] * num_hospitals + [3] * num_fire_departments + [4] * num_police_stations
     np.random.shuffle(roles)
@@ -150,6 +149,59 @@ def find_side_lanes(grid):
     return grid
 
 
+def expand_lanes(grid, num_x_lanes=1, num_y_lanes=1, x_lanes=None, y_lanes=None):
+    if x_lanes is None:
+        x_lanes = []
+        for x in range(grid.shape[1] - 1):
+            if grid[0, x] == -1 and grid[0, x + 1] == -1:
+                x_lanes.append(x)
+    else:
+        num_x_lanes = len(x_lanes)
+    if y_lanes is None:
+        y_lanes = []
+        for y in range(grid.shape[0] - 1):
+            if grid[y, 0] == -1 and grid[y + 1, 0] == -1:
+                y_lanes.append(y)
+    else:
+        num_y_lanes = len(y_lanes)
+
+    rnd_x_lanes = np.random.choice(x_lanes, num_x_lanes, replace=False)
+    rnd_y_lanes = np.random.choice(y_lanes, num_y_lanes, replace=False)
+
+    new_grid = np.zeros((grid.shape[0] + num_x_lanes * 2, grid.shape[1] + num_y_lanes * 2), dtype=int)
+
+    new_x = 0
+    for x in range(grid.shape[0]):
+        if x in rnd_x_lanes:
+            for i in range(2):
+                new_grid[:, x + new_x + i] = np.pad(grid[:, x], (0, num_x_lanes * 2), mode='constant')
+            new_x += 2
+            for i in range(2):
+                new_grid[:, x + new_x + i] = np.pad(grid[:, x + 1], (0, num_x_lanes * 2), mode='constant')
+        else:
+            new_grid[:, x + new_x] = np.pad(grid[:, x], (0, num_x_lanes * 2), mode='constant')
+
+    grid = new_grid.T
+
+    new_grid = np.zeros_like(grid, dtype=int)
+
+    new_y = 0
+    for y in range(grid.shape[1]):
+        if y + new_y >= new_grid.shape[1]:
+            break
+        if y in rnd_y_lanes:
+            for i in range(2):
+                new_grid[:, y + new_y + i] = grid[:, y]
+            new_y += 2
+            for i in range(2):
+                new_grid[:, y + new_y + i] = grid[:, y + 1]
+        else:
+            new_grid[:, y + new_y] = grid[:, y]
+
+    new_grid = new_grid.T
+    return new_grid
+
+
 def export_grid(grid, filename):
     with open(filename, 'w') as f:
         for row in grid:
@@ -187,10 +239,10 @@ def visualize_grid(grid):
 
 if __name__ == "__main__":
     # Define grid dimensions and number of buildings
-    width, height = 5 * 4 + 2, 5 * 4 + 2
-    num_hospitals = 3
+    width, height = 6 * 4 + 2, 6 * 4 + 2
+    num_hospitals = 1
     num_police_stations = 1
-    num_fire_departments = 2
+    num_fire_departments = 1
 
     # Generate the grid
     grid = generate_grid(width, height)
@@ -204,8 +256,11 @@ if __name__ == "__main__":
     # Find and mark side lanes
     grid = find_side_lanes(grid)
 
-    print(grid)
-    print(grid.shape)
+    # Expand lanes
+    # grid = expand_lanes(grid, x_lanes=[6, 18], y_lanes=[6, 18])
+
+    # print(grid)
+    # print(grid.shape)
 
     export_grid(grid, "grid_world.txt")
 

@@ -3,6 +3,7 @@ package State;
 import Tiles.BuildingTile;
 import Tiles.RoadTile;
 import Tiles.Tile;
+import Vehicles.AmbulanceAgent;
 import Vehicles.CarAgent;
 import Vehicles.FiretruckAgent;
 
@@ -81,6 +82,52 @@ public class GlobalState {
             return;
         }
 
+        if (grid[y][x].getAgent() != null && grid[oldY][oldX].getAgent() != null && grid[oldY][oldX].getAgent() != agent) {
+            updateGridDisplay();
+            return;
+        }
+
+        if (grid[y][x].getAgent() != null) {
+            grid[oldY][oldX].setAgent(null);
+            updateGridDisplay();
+            return;
+        }
+        if (grid[oldY][oldX].getAgent() != null && grid[oldY][oldX].getAgent() != agent) {
+            grid[y][x].setAgent(agent);
+            updateGridDisplay();
+            return;
+        }
+
+        grid[oldY][oldX].setAgent(null);
+        grid[y][x].setAgent(agent);
+        updateGridDisplay();
+    }
+
+    public void moveCar(int oldX, int oldY, int x, int y, AmbulanceAgent agent) {
+        if (grid == null) {
+            return;
+        }
+
+        if (agent == null) {
+            return;
+        }
+
+        if (grid[y][x].getAgent() != null && grid[y][x].getAgent().getCrashed() && grid[oldY][oldX].getAgent() != null && grid[oldY][oldX].getAgent() != agent && grid[oldY][oldX].getAgent().getCrashed()) {
+            updateGridDisplay();
+            return;
+        }
+
+        if (grid[y][x].getAgent() != null && grid[y][x].getAgent().getCrashed()) {
+            grid[oldY][oldX].setAgent(null);
+            updateGridDisplay();
+            return;
+        }
+        if (grid[oldY][oldX].getAgent() != null && grid[oldY][oldX].getAgent() != agent && grid[oldY][oldX].getAgent().getCrashed()) {
+            grid[y][x].setAgent(agent);
+            updateGridDisplay();
+            return;
+        }
+
         grid[oldY][oldX].setAgent(null);
         grid[y][x].setAgent(agent);
         updateGridDisplay();
@@ -104,7 +151,7 @@ public class GlobalState {
         // check for crash
         CarAgent possibleCrashAgent = grid[y][x].getAgent();
         int possibleCrashId = grid[y][x].getCarId();
-        if (possibleCrashId == 0) {
+        if (possibleCrashId == 0 || possibleCrashAgent instanceof AmbulanceAgent || possibleCrashAgent instanceof FiretruckAgent) {
             grid[oldY][oldX].setAgent(null);
             grid[y][x].setAgent(agent);
             status = 1;

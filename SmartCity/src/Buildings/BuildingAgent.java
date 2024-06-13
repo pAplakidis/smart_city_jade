@@ -9,7 +9,7 @@ import jade.lang.acl.ACLMessage;
 import java.util.*;
 
 public class BuildingAgent extends Agent {
-    private double fireProbability = 0.05; // 1% chance of fire
+    private double fireProbability = 0.02; // 2% chance of fire
     private GlobalState globalState;
     private List<BuildingTile> buildings;
 
