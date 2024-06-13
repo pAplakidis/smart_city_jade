@@ -41,7 +41,15 @@ public class GridVisualizer extends JPanel {
                 // TODO: color based on car type
                 if (carValue != 0) {
 //                    System.out.println("Car value: " + carValue);
-                    g.setColor(Color.darkGray);
+                    if (carValue >= 166 && carValue < 199)
+                        g.setColor(Color.WHITE);
+                    else if (carValue >= 199) {
+                        g.setColor(Color.RED);
+                    } else{
+//                        text = Integer.toString(carValue);
+//                        text = "\uD83D\uDE97";
+                        g.setColor(Color.darkGray);
+                    }
                 } else {
                     switch (cellValue) {
                         case -3:
@@ -85,14 +93,16 @@ public class GridVisualizer extends JPanel {
                 g.setColor(Color.BLACK);
                 String text;
                 if (carValue != 0) {
-//                    text = "C";
                     if (carValue >= 166 && carValue < 199)
-                        text = "\uD83D\uDE91";
+//                        text = "\uD83D\uDE91";
+                        text = "A";
                     else if (carValue >= 199) {
                         text = "\uD83D\uDE92";
+                        text = "F";
                     } else
 //                        text = Integer.toString(carValue);
-                        text = "\uD83D\uDE97";
+//                        text = "\uD83D\uDE97";
+                        text = "C";
                 } else {
                     switch (cellValue) {
                         case -1:

@@ -17,7 +17,9 @@ public class CarAgent extends Agent {
     private int id = 1;
     private GlobalState globalState;
     private boolean crashed = false;
+    private boolean respawned = false;
     private int lookahead = 2;  // 0: naive, 1: greedy, 2: cooperative
+    private Navigator navigator;
 
     public boolean getCrashed() {
         return crashed;
@@ -43,7 +45,6 @@ public class CarAgent extends Agent {
         private CarAgent myCarAgent;
 
         Tile[][] grid;
-        private Navigator navigator;
         private int newX, newY;
         private List<Tile> path;
         private int pathIdx;
@@ -57,7 +58,6 @@ public class CarAgent extends Agent {
             // init variables
             this.globalState = GlobalState.getInstance();
             this.myCarAgent = agent;
-            navigator = new Navigator(globalState.getGrid());
             navDone = false;
             this.newX = newX;
             this.newY = newY;
@@ -93,7 +93,7 @@ public class CarAgent extends Agent {
 
         @Override
         public void action() {
-            if (!navDone) {
+            if (!navDone && !respawned) {
                 // Follow path from Navigator
                 int x = location[0];
                 int y = location[1];
@@ -105,8 +105,6 @@ public class CarAgent extends Agent {
                     return;
                 }
 
-                // TODO: cleanup => sub-behaviours can be functions
-                // TODO: move this behaviour to a function and call it recursively if reached path, with random point
                 // NOTE: here x and y are columns and rows correspondingly (i.e. they are inverted)
                 boolean hasPriority = ((RoadTile) globalState.getGrid()[y][x]).hasPriority();
                 int xPath = path.get(pathIdx).getY();
@@ -152,6 +150,7 @@ public class CarAgent extends Agent {
                 pathIdx = 1;
                 path = navigator.findPath(start, end);
                 navDone = false;
+                respawned = false;
             }
         }
 
@@ -161,20 +160,32 @@ public class CarAgent extends Agent {
         }
     }
 
+    public void randomSpawn(){
+        RoadTile loc = navigator.getRandomRoadTile();
+        location[0] = loc.getX();
+        location[1] = loc.getY();
+        loc.setAgent(this);
+        this.setCrashed(false);
+        respawned = true;
+    }
+
+
     public void setup() {
         globalState = GlobalState.getInstance();
+        navigator = new Navigator(globalState.getGrid());
         Object[] args = getArguments();
 
         if (args != null) {
             id = Integer.parseInt(args[0].toString());
             location[0] = Integer.parseInt(args[1].toString());
             location[1] = Integer.parseInt(args[2].toString());
+            lookahead = Integer.parseInt(args[3].toString());
         }
 //        System.out.println("[Vehicles.CarAgent] Accessed Grid with id: " + id);
 
+        RoadTile destination = navigator.getRandomRoadTile();
         globalState.setCarLocation(location[0], location[1], this);
-//        addBehaviour(new RoamBehaviour(this, this, 6, 8));
-        addBehaviour(new RoamBehaviour(this, this, 3, 5));
+        addBehaviour(new RoamBehaviour(this, this, destination.getX(), destination.getY()));
     }
 }
 

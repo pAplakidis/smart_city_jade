@@ -230,7 +230,7 @@ public class GlobalState {
                 }
 
                 // check forward (not if greedy)
-                if(!(y - 1 < 0 || x + 1 + i >= grid[y-i].length)) {
+                if(!(y - 1 < 0 || x + 1 + i >= grid[y].length)) {
                     checkForward = (radius >= 2 && grid[y - 1][x + 1 + i].getCarId() != 0);
                 }
 

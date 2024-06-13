@@ -165,7 +165,7 @@ public class AmbulanceAgent extends CarAgent {
         if (loadingProgress <= 0) {
             System.out.println("[" + this.getLocalName() + "] Injured loaded, returning to fire station");
             loadingProgress = 100;
-            roadTile.getAgent().setCrashed(false);
+//            roadTile.getAgent().randomSpawn();
             roadTile.setAgent(null);
             nextLocation = null;
             currentState = State.RETURNING_TO_HOSPITAL;
